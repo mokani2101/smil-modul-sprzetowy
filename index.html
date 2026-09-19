@@ -1,1 +1,308 @@
-
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Symfonia — Kartoteka sprzętu</title>
+  <style>
+    :root { --line:#b8b8b8; --chrome:#737985; --sidebar:#e7e9ed; --tab:#f4f4f4; --blue:#2a67b6; --text:#272727; }
+    * { box-sizing:border-box; }
+    body { margin:0; min-width:1080px; color:var(--text); font:12px Arial, Helvetica, sans-serif; background:#f7f7f7; }
+    button, input, select { font:12px Arial, Helvetica, sans-serif; }
+    .topbar { height:29px; display:flex; align-items:center; gap:16px; padding:0 7px; color:#fff; background:var(--chrome); }
+    .topbar span { white-space:nowrap; }
+    .shell { display:grid; grid-template-columns:200px 1fr; min-height:calc(100vh - 29px); }
+    .sidebar { padding:7px 6px; background:var(--sidebar); border-right:1px solid #c6c8cc; line-height:30px; }
+    .nav-group { font-weight:bold; } .nav-sub { padding-left:34px; }
+    .arrow { display:inline-block; width:15px; font-size:15px; }
+    .main { position:relative; padding:11px 12px 57px 5px; background:#fbfbfb; }
+    fieldset { min-width:0; margin:0; padding:12px 12px 10px; border:1px solid var(--line); }
+    legend { padding:0 3px; font-weight:bold; }
+    .record-head { display:grid; grid-template-columns:1fr 245px; gap:5px; min-height:242px; }
+    .basic { display:grid; grid-template-columns:270px 260px 270px; align-content:start; gap:8px 40px; padding:14px 15px 15px; }
+    .form-row { display:grid; grid-template-columns:92px minmax(0, 1fr); align-items:center; gap:8px; min-height:24px; }
+    .form-row label { font-weight:bold; text-align:right; white-space:nowrap; }
+    input, select { height:22px; width:100%; border:1px solid #b8b8b8; background:#fff; padding:2px 5px; color:#292929; }
+    .date-input { display:grid; grid-template-columns:1fr 23px; } .date-input input { border-right:0; } .date-input button { border:1px solid #999; padding:0; color:#1c2f3d; background:#dce5e9; cursor:pointer; }
+    .print-panel { display:flex; flex-direction:column; gap:10px; padding:13px 10px; }
+    .action { height:30px; border:1px solid #b5b5b5; background:#fff; color:#3d3d3d; cursor:pointer; }
+    .action:hover, .action:focus { background:#eef4ff; border-color:#5282c4; outline:none; }
+    .workspace { display:grid; grid-template-columns:minmax(0, 1fr) 245px; gap:5px; margin-top:4px; }
+    .tabs { display:flex; align-items:end; height:28px; overflow:hidden; white-space:nowrap; }
+    .tab { height:24px; padding:0 11px; border:1px solid #c5c5c5; border-bottom:0; background:var(--tab); color:#333; cursor:pointer; }
+    .tab + .tab { margin-left:-1px; } .tab.active { height:26px; border-top:4px solid var(--blue); padding-top:0; background:#fff; font-weight:bold; }
+    .viewbox { min-height:592px; padding:24px 16px; border:1px solid var(--line); background:#fff; }
+    .operations { min-height:592px; padding:14px 10px; display:flex; flex-direction:column; gap:10px; }
+    .view { display:none; } .view.active { display:block; }
+    .location-grid { display:grid; grid-template-columns:36% 1fr; gap:5px; min-height:546px; }
+    .location-grid fieldset { padding:12px 14px; }
+    .stack { display:flex; flex-direction:column; gap:6px; }
+    .location-form .form-row { grid-template-columns:110px minmax(0,1fr); min-height:25px; }
+    .location-form .form-row label { font-weight:bold; }
+    .right-location { display:flex; flex-direction:column; gap:5px; }
+    .right-location fieldset:first-child { min-height:115px; }
+    .right-location fieldset:last-child { min-height:163px; }
+    .compact .form-row { grid-template-columns:123px minmax(0,1fr); }
+    .purchase { min-height:546px; } .purchase fieldset { min-height:546px; padding-top:12px; }
+    .purchase .form-row { width:342px; grid-template-columns:132px 200px; }
+    .counter-grid { display:grid; grid-template-columns:35% 1fr; gap:5px; min-height:546px; }
+    .history { min-height:546px; display:flex; flex-direction:column; padding:0; overflow:hidden; }
+    .history legend { margin-left:10px; }
+    .table-head { display:grid; grid-template-columns:90px 90px 1fr; height:25px; margin:1px 4px 0; color:white; background:#727986; }
+    .table-head span { padding:6px 8px; border-right:1px solid #ddd; }
+    .empty-table { flex:1; margin:0 4px 4px; border:1px solid #ddd; border-top:0; background:linear-gradient(#fff,#fcfcfc); }
+    .table-footer { width:198px; margin:0 auto 4px; padding:4px 8px; border:1px solid var(--line); }
+    .counter-right { display:flex; flex-direction:column; gap:12px; }
+    .counter-right fieldset { padding:11px 15px; }
+    .counter-right .form-row { grid-template-columns:175px 110px 100px; width:440px; }
+    .counter-right .form-row label { grid-column:1; } .counter-right .form-row > input, .counter-right .form-row > .date-input { grid-column:2; }
+    .counter-right .form-row .aux { grid-column:3; }
+    .next-review .form-row { grid-template-columns:175px 110px; }
+    .counter-entry { padding:13px 5px 3px; border-top:1px solid var(--line); }
+    .counter-entry button { width:100%; height:31px; border:1px solid #aaa; background:#fff; cursor:pointer; }
+    .extra-view fieldset { min-height:546px; padding:14px 15px; }
+    .extra-view .form-row { width:342px; grid-template-columns:132px 200px; }
+    .location-list { min-height:546px; padding:0; overflow:hidden; display:flex; flex-direction:column; }
+    .list-toolbar { height:45px; padding:12px 5px 5px; background:#eef0f2; text-align:right; }
+    .list-toolbar input { width:400px; height:22px; font-style:italic; }
+    .location-table-wrap { flex:1; overflow:auto; }
+    .location-table { width:100%; border-collapse:collapse; table-layout:fixed; }
+    .location-table th { height:24px; padding:4px 7px; border-right:1px solid #ddd; text-align:left; color:#fff; font-weight:normal; background:#707784; }
+    .location-table td { height:25px; padding:0; border-right:1px solid #e2e2e2; border-bottom:1px solid #e2e2e2; background:#fff; }
+    .location-table th:first-child, .location-table td:first-child { width:18px; }
+    .location-table th:nth-child(2) { width:90px; }.location-table th:nth-child(3) { width:120px; }.location-table th:nth-child(4) { width:150px; }.location-table th:nth-child(5) { width:150px; }.location-table th:nth-child(6) { width:150px; }.location-table th:nth-child(7) { width:100px; }
+    .location-table input, .location-table select { width:100%; height:24px; border:0; padding:2px 6px; background:transparent; }
+    .row-marker { text-align:center; color:#555; font-size:14px; }
+    .list-footer { display:flex; align-items:center; justify-content:space-between; height:32px; padding:4px 6px; border-top:1px solid #bbb; }
+    .row-count { width:116px; padding:4px 7px; border:1px solid var(--line); }
+    .add-row { height:24px; min-width:145px; border:1px solid #aaa; background:#fff; cursor:pointer; }
+    .add-row:hover { background:#eef4ff; border-color:#5282c4; }
+    .service-list { min-height:546px; border:1px solid var(--line); display:flex; flex-direction:column; overflow:hidden; }
+    .service-table { min-width:1250px; }
+    .service-table th:nth-child(2), .service-table th:nth-child(3), .service-table th:nth-child(4) { width:105px; }
+    .service-table th:nth-child(5) { width:115px; }
+    .service-table th:nth-child(6), .service-table th:nth-child(7) { width:135px; }
+    .service-table th:nth-child(8) { width:65px; }
+    .service-table th:nth-child(9) { width:105px; }
+    .service-table th:nth-child(10) { width:83px; }
+    .service-table input[type="checkbox"] { display:block; width:15px; height:15px; margin:4px auto; accent-color:#2a67b6; }
+    .service-total { min-width:100px; padding:4px 6px; border:1px solid var(--line); text-align:right; }
+    .service-table input[type="number"] { text-align:right; }
+    .screen[hidden] { display:none !important; }
+    .main.list-mode { padding:4px 6px 28px 0; }
+    .equipment-browser { display:grid; grid-template-columns:150px minmax(0,1fr); min-height:calc(100vh - 62px); }
+    .filters-panel { border-right:1px solid #bec2c9; background:#f0f2f6; }
+    .filters-heading { height:22px; padding:3px 5px; color:#6b7179; background:#e8ebf0; }
+    .filters-panel input { width:calc(100% - 10px); margin:5px; height:21px; font-style:italic; }
+    .equipment-content { min-width:0; padding:6px 0 0 2px; }
+    .equipment-title { height:25px; padding:5px 3px; color:#777; }
+    .equipment-actions { display:flex; gap:18px; height:48px; align-items:center; padding-left:8px; }
+    .equipment-actions button { border:0; background:transparent; cursor:pointer; color:#333; text-align:center; }
+    .equipment-actions button:hover { color:#1f5ca8; }
+    .equipment-actions .add-symbol { display:block; color:#33a949; font-size:27px; line-height:23px; }
+    .equipment-actions .open-symbol { display:block; color:#686f79; font-size:18px; line-height:23px; }
+    .equipment-search { width:100%; height:24px; margin-bottom:2px; font-style:italic; }
+    .equipment-table-wrap { height:calc(100vh - 177px); min-height:520px; overflow:auto; border:1px solid #b7b7b7; background:#fff; }
+    .equipment-table { border-collapse:collapse; table-layout:fixed; width:1650px; font-size:10px; }
+    .equipment-table th { position:sticky; top:0; z-index:1; height:20px; padding:2px 4px; border-right:1px solid #d4d6d9; text-align:left; color:#fff; background:#6d7480; white-space:nowrap; }
+    .equipment-table td { height:19px; padding:2px 4px; border-right:1px solid #e3e4e6; border-bottom:1px solid #ececee; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .equipment-table tbody tr:nth-child(even) { background:#f3f4f6; }
+    .equipment-table tbody tr:hover, .equipment-table tbody tr:focus { background:#dfeafa; outline:none; cursor:pointer; }
+    .equipment-table tbody tr.selected { box-shadow:inset 3px 0 var(--blue); }
+    .equipment-table .select-col { width:32px; text-align:center; }
+    .equipment-table .select-col input { width:13px; height:13px; margin:0; vertical-align:middle; }
+    .equipment-table th:nth-child(2) { width:90px; }.equipment-table th:nth-child(3) { width:100px; }.equipment-table th:nth-child(4) { width:110px; }.equipment-table th:nth-child(5) { width:105px; }.equipment-table th:nth-child(6) { width:95px; }.equipment-table th:nth-child(7) { width:85px; }.equipment-table th:nth-child(8) { width:90px; }.equipment-table th:nth-child(9), .equipment-table th:nth-child(10) { width:90px; }.equipment-table th:nth-child(11) { width:90px; }.equipment-table th:nth-child(12), .equipment-table th:nth-child(13), .equipment-table th:nth-child(14) { width:90px; }.equipment-table th:nth-child(15) { width:85px; }.equipment-table th:nth-child(16) { width:100px; }.equipment-table th:nth-child(17) { width:95px; }.equipment-table th:nth-child(18) { width:95px; }
+    .equipment-list-footer { display:flex; justify-content:space-between; padding:4px 6px; color:#62676e; }
+    .backbar { display:flex; align-items:center; gap:12px; height:29px; margin:-7px 0 5px; }
+    .backbar button { border:1px solid #b8b8b8; background:#fff; padding:4px 10px; cursor:pointer; }
+    .backbar button:hover { background:#eef4ff; border-color:#5282c4; }
+    .backbar span { color:#69717d; }
+    .footer-actions { position:absolute; right:16px; bottom:12px; display:flex; gap:10px; } .footer-actions .action { width:80px; }
+    .status { position:fixed; right:20px; bottom:16px; z-index:10; max-width:310px; padding:9px 13px; color:white; background:#333d4a; border-radius:3px; box-shadow:0 2px 8px #5558; opacity:0; transform:translateY(12px); transition:.2s; pointer-events:none; }
+    .status.show { opacity:1; transform:translateY(0); }
+    @media (max-width:1300px) { .basic { gap:8px 20px; grid-template-columns:250px 240px 250px; } .tabs .tab { padding:0 8px; } }
+  </style>
+</head>
+<body>
+  <header class="topbar"><span>Firma</span><span>Kartoteki</span><span>Zestawienia BI</span><span>Okno</span><span>Pomoc</span><span>eBOK</span><span>eSklep</span><span>Chmura Symfonii</span></header>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="nav-group"><span class="arrow">›</span>Dokumenty</div><div class="nav-group"><span class="arrow">›</span>Zamówienia</div><div class="nav-group"><span class="arrow">›</span>Kartoteki</div><div class="nav-group"><span class="arrow">›</span>Zapotrzebowanie</div>
+      <div>Zlecenia</div><div>Ustawienia</div><div>Kokpit BI</div><div>Wsparcie online</div><div class="nav-group"><span class="arrow">⌄</span>Sprzęt medyczny</div><div class="nav-sub">Kartoteka sprzętu</div>
+    </aside>
+    <main class="main list-mode">
+      <section class="screen equipment-browser" id="equipment-list-screen" aria-label="Lista sprzętu medycznego">
+        <aside class="filters-panel"><div class="filters-heading">Filtry</div><input id="filter-search" type="search" placeholder="Szukaj" aria-label="Filtruj sprzęt"></aside>
+        <div class="equipment-content"><div class="equipment-title">Sprzęt medyczny</div><div class="equipment-actions"><button id="new-equipment" type="button"><span class="add-symbol">+</span>Dodaj</button><button id="open-equipment" type="button"><span class="open-symbol">▣</span>Otwórz</button></div><input class="equipment-search" id="equipment-search" type="search" placeholder="Szukaj" aria-label="Szukaj sprzętu"><div class="equipment-table-wrap"><table class="equipment-table"><thead><tr><th class="select-col"></th><th>Typ</th><th>Model</th><th>Producent</th><th>Nr seryjny</th><th>Nr paszportu</th><th>Status</th><th>Typ własności</th><th>Data produkcji</th><th>Data zakupu</th><th>Wartość zakupu</th><th>Data instalacji</th><th>Data likwidacji</th><th>Następny przegląd</th><th>Dod. znacznik</th><th>Typ lokalizacji</th><th>Akt. lokalizacja</th><th>Pochodzenie</th></tr></thead><tbody id="equipment-rows"></tbody></table></div><div class="equipment-list-footer"><span id="equipment-count"></span><span>Dane przykładowe prototypu</span></div></div>
+      </section>
+      <section class="screen" id="equipment-card-screen" aria-label="Karta sprzętu" hidden>
+      <div class="backbar"><button id="back-to-list" type="button">← Wróć do listy</button><span id="card-heading"></span></div>
+      <div class="record-head">
+        <fieldset><legend>Dane podstawowe</legend><div class="basic">
+          <div class="stack">
+            <div class="form-row"><label for="equipment-type">Typ:</label><input id="equipment-type" aria-label="Typ sprzętu"></div><div class="form-row"><label>Model:</label><input></div><div class="form-row"><label>Producent:</label><input></div><div class="form-row"><label>Nr seryjny:</label><input></div><div class="form-row"><label>Nr paszportu:</label><input></div><div class="form-row"><label>Nr inwent.:</label><input></div>
+          </div><div class="stack">
+            <div class="form-row"><label>Data produkcji:</label><div class="date-input"><input placeholder="Select a date"><button class="calendar" type="button">15</button></div></div><div class="form-row"><label>Data instalacji:</label><div class="date-input"><input placeholder="Select a date"><button class="calendar" type="button">15</button></div></div><div class="form-row"><label>Data likwidacji:</label><div class="date-input"><input placeholder="Select a date"><button class="calendar" type="button">15</button></div></div><div class="form-row"><label>Nast. przegląd:</label><div class="date-input"><input placeholder="Select a date"><button class="calendar" type="button">15</button></div></div>
+          </div><div class="stack">
+            <div class="form-row"><label>Status:</label><select id="status-choice"></select></div><div class="form-row"><label>Typ własności:</label><input></div><div class="form-row"><label>Województwo:</label><input></div><div class="form-row"><label>Dod. znacznik:</label><input></div><div class="form-row"><label>Pochodzenie:</label><input></div><div class="form-row"><label>Stan licznika:</label><input style="max-width:100px"></div>
+          </div>
+        </div></fieldset>
+        <fieldset class="print-panel"><legend>Wydruk</legend><button class="action" data-action="Druk paszportu">Drukuj paszport</button><button class="action" data-action="Druk dodatkowej strony paszportu">Drukuj dod. str. paszportu</button></fieldset>
+      </div>
+      <div class="workspace"><section>
+        <nav class="tabs" aria-label="Zakładki kartoteki">
+          <button class="tab active" data-tab="location">Akt. lokalizacja</button><button class="tab" data-tab="extra">Dane dodatkowe</button><button class="tab" data-tab="purchase">Zakup</button><button class="tab" data-tab="counter">Licznik</button><button class="tab" data-tab="changes">Zmiany lokalizacji</button><button class="tab" data-tab="service">Serwis</button><button class="tab" data-tab="activities">Czynności</button><button class="tab" data-tab="wash">Spr. zmywalnia</button><button class="tab" data-tab="issue">Spr. wydanie</button><button class="tab" data-tab="warranty">Gwarancja</button><button class="tab" data-tab="licence">Licencja</button><button class="tab" data-tab="battery">Bateria</button><button class="tab" data-tab="note">Notatka</button>
+        </nav>
+        <div class="viewbox">
+          <section class="view active" id="location">
+            <div class="location-grid">
+              <fieldset class="location-form"><legend>Aktualna lokalizacja zewn.</legend><div class="stack">
+                <div class="form-row"><label>Typ lokalizacji:</label><select class="location-choice" id="current-location"></select></div><div class="form-row"><label>Kod:</label><input></div><div class="form-row"><label>Nazwa:</label><input></div><div class="form-row"><label>Adres:</label><input></div><div class="form-row"><label>Kod pocztowy:</label><input></div><div class="form-row"><label>Miasto:</label><input></div><div class="form-row"><label>Email:</label><input type="email"></div><div class="form-row"><label>Nr telefonu 1:</label><input type="tel"></div><div class="form-row"><label>Nr telefonu 2:</label><input type="tel"></div>
+              </div></fieldset>
+              <div class="right-location compact">
+                <fieldset><legend>Aktualna lokalizacja wewn.</legend><div class="stack"><div class="form-row"><label>Jednostka org.:</label><input></div><div class="form-row"><label>Pomieszczenie:</label><input></div><div class="form-row"><label>Właściciel:</label><input></div></div></fieldset>
+                <fieldset><legend>Pacjent - dane dodatkowe</legend><div class="stack"><div class="form-row"><label>Rejon:</label><input></div><div class="form-row"><label>Rodzaj świadczenia:</label><input></div><div class="form-row"><label>Grupa:</label><input></div><div class="form-row"><label>Śr. dob. czas went:</label><input></div></div></fieldset>
+              </div>
+            </div>
+          </section>
+          <section class="view" id="extra"><div class="extra-view"><fieldset><legend>Informacje dodatkowe</legend><div class="stack"><div class="form-row"><label>Kolor:</label><input></div><div class="form-row"><label>Rozmiar:</label><input></div></div></fieldset></div></section>
+          <section class="view" id="purchase"><div class="purchase"><fieldset><legend>Informacje dot. zakupu</legend><div class="stack"><div class="form-row"><label>Data zakupu:</label><div class="date-input"><input placeholder="Select a date"><button class="calendar" type="button">15</button></div></div><div class="form-row"><label>Wartość zakupu:</label><input></div><div class="form-row"><label>Nr faktury:</label><input></div></div></fieldset></div></section>
+          <section class="view" id="counter"><div class="counter-grid"><fieldset class="history"><legend>Historia spisu licznika</legend><div class="table-head"><span>Data</span><span>Wartość</span><span>Typ operacji</span></div><div class="empty-table"></div><div class="table-footer">Liczba wierszy: 0</div></fieldset><div class="counter-right"><fieldset><legend>Dane do kalkulacji następnego przeglądu</legend><div class="stack"><div class="form-row"><label>Poprzedni odczyt:</label><div class="date-input"><input placeholder="Select a date"><button class="calendar" type="button">15</button></div><input class="aux"></div><div class="form-row"><label>Ostatni odczyt:</label><div class="date-input"><input placeholder="Select a date"><button class="calendar" type="button">15</button></div><input class="aux"></div><div class="form-row"><label>Różnica:</label><input><input class="aux"></div><div class="form-row"><label>Śr. dob. czas went:</label><input></div></div></fieldset><fieldset class="next-review"><legend>Następny przegląd</legend><div class="stack"><div class="form-row"><label>Ostatni przegląd:</label><div class="date-input"><input placeholder="Select a date"><button class="calendar" type="button">15</button></div></div><div class="form-row"><label>Następny przegląd (czas):</label><div class="date-input"><input placeholder="Select a date"><button class="calendar" type="button">15</button></div></div><div class="form-row"><label>Następny przegląd (licznik):</label><div class="date-input"><input placeholder="Select a date"><button class="calendar" type="button">15</button></div></div></div></fieldset><div class="counter-entry"><button id="enter-counter" type="button">Wprowadź wartość licznika</button></div></div></div></section>
+          <section class="view" id="changes"><fieldset class="location-list"><legend>Zmiany lokalizacji</legend><div class="list-toolbar"><input id="location-search" placeholder="Szukaj"></div><div class="location-table-wrap"><table class="location-table"><thead><tr><th></th><th>Data</th><th>Typ lokalizacji</th><th>Lokalizacja</th><th>Jednostka org.</th><th>Pomieszczenie</th><th>Właściciel</th><th>Opis</th></tr></thead><tbody id="location-rows"><tr><td class="row-marker">›</td><td><input type="date"></td><td><input></td><td><select class="location-choice"></select></td><td><input></td><td><input></td><td><input></td><td><input></td></tr><tr><td class="row-marker">›</td><td><input type="date"></td><td><input></td><td><select class="location-choice"></select></td><td><input></td><td><input></td><td><input></td><td><input></td></tr><tr><td class="row-marker">›</td><td><input type="date"></td><td><input></td><td><select class="location-choice"></select></td><td><input></td><td><input></td><td><input></td><td><input></td></tr><tr><td class="row-marker">›</td><td><input type="date"></td><td><input></td><td><select class="location-choice"></select></td><td><input></td><td><input></td><td><input></td><td><input></td></tr></tbody></table></div><div class="list-footer"><span class="row-count" id="row-count">Liczba wierszy: 4</span><button class="add-row" id="add-location-row" type="button">Dodaj pozycję</button></div></fieldset></section>
+          <section class="view" id="service"><div class="service-list"><div class="list-toolbar"><input id="service-search" type="search" placeholder="Szukaj" aria-label="Szukaj wierszy serwisowych"></div><div class="location-table-wrap"><table class="location-table service-table"><thead><tr><th></th><th>Data od</th><th>Data do</th><th>Data</th><th>Nr zlecenia</th><th>Typ serwisu</th><th>Kontrahent</th><th>Licznik</th><th>Koszt</th><th>Zakończono</th><th>Zakres serwisu</th></tr></thead><tbody id="service-rows"></tbody></table></div><div class="list-footer"><span class="row-count" id="service-row-count">Liczba wierszy: 0</span><output class="service-total" id="service-total" aria-label="Łączny koszt serwisu">0,00 zł</output><button class="add-row" id="add-service-row" type="button">Dodaj pozycję</button></div></div></section>
+          <section class="view" id="placeholder"><div style="padding:18px;color:#666">Ta zakładka jest dostępna w widoku prototypu.</div></section>
+        </div>
+      </section><fieldset class="operations"><legend>Operacje</legend><button class="action" data-action="Zmiana lokalizacji">Zmiana lokalizacji</button><button class="action" data-action="Wydanie do pacjenta">Wydanie do pacjenta</button><button class="action" data-action="Wydanie do serwisu">Wydanie do serwisu</button><button class="action" data-action="Zmiana magazynu">Zmiana magazynu</button><button class="action" data-action="Zmywalnia">Zmywalnia</button><button class="action" data-action="Przyjęcie na magazyn / lokalizację">Przyjęcie na magazyn / lokalizację</button></fieldset>
+      </div><div class="footer-actions"><button class="action" id="save-equipment" type="button">Zapisz</button><button class="action" id="new-equipment-card" type="button">Dodaj</button></div>
+      </section>
+    </main>
+  </div><div class="status" role="status" aria-live="polite"></div>
+  <script>
+    const status = document.querySelector('.status'); let timer;
+    const show = message => { status.textContent = message; status.classList.add('show'); clearTimeout(timer); timer=setTimeout(()=>status.classList.remove('show'),2200); };
+    document.querySelectorAll('.tab').forEach(tab => tab.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); tab.classList.add('active');
+      document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+      const view=document.getElementById(tab.dataset.tab); (view || document.getElementById('placeholder')).classList.add('active');
+    }));
+    document.querySelectorAll('[data-action]').forEach(button=>button.addEventListener('click',()=>show(button.dataset.action)));
+    document.querySelectorAll('.calendar').forEach(button=>button.addEventListener('click',()=>{ const input=button.previousElementSibling; input.type='date'; input.focus(); try { input.showPicker(); } catch(e) {} }));
+    document.getElementById('enter-counter').addEventListener('click',()=>{ const value=prompt('Wprowadź wartość licznika:'); if(value!==null && value.trim()!==''){ document.querySelector('input[style]').value=value; show('Wartość licznika została wprowadzona'); }});
+    const locations = ['MAGAZYN POZ', 'MAGAZYN WAW', 'PACJENT', 'PERSONEL', 'SERWIS', 'MAGAZYN ZEW.'];
+    const statuses = ['AKTYWNY', 'DO ZWROTU', 'USZKODZONY', 'W NAPRAWIE', 'W DEZYNFEKCJI', 'W TRANSPORCIE', 'ZWRÓCONY', 'SPRZEDANY', 'ZLIKWIDOWANY'];
+    const fillChoices = (select, choices, label) => { if (select.options.length) return; select.add(new Option(label, '')); choices.forEach(choice => select.add(new Option(choice, choice))); };
+    const fillLocationChoices = scope => scope.querySelectorAll('.location-choice').forEach(select => fillChoices(select, locations, 'Wybierz lokalizację'));
+    fillLocationChoices(document); fillChoices(document.getElementById('status-choice'), statuses, 'Wybierz status');
+    const rows = document.getElementById('location-rows'), rowCount = document.getElementById('row-count');
+    const updateRowCount = () => rowCount.textContent = `Liczba wierszy: ${rows.querySelectorAll('tr').length}`;
+    const addLocationRow=() => {
+      const row=document.createElement('tr'); row.innerHTML='<td class="row-marker">›</td><td><input type="date"></td><td><input></td><td><select class="location-choice"></select></td><td><input></td><td><input></td><td><input></td><td><input></td>';
+      rows.appendChild(row); fillLocationChoices(row); updateRowCount(); return row;
+    };
+    document.getElementById('add-location-row').addEventListener('click', () => { addLocationRow().querySelector('input').focus(); show('Dodano nową pozycję lokalizacji'); });
+    document.getElementById('location-search').addEventListener('input', event => {
+      const phrase=event.target.value.trim().toLocaleLowerCase('pl'); rows.querySelectorAll('tr').forEach(row => { const values=[...row.querySelectorAll('input, select')].map(field=>field.selectedOptions ? field.selectedOptions[0].text : field.value).join(' ').toLocaleLowerCase('pl'); row.style.display=!phrase || values.includes(phrase) ? '' : 'none'; });
+    });
+    const serviceRows=document.getElementById('service-rows');
+    const formatCost=new Intl.NumberFormat('pl-PL', { style:'currency', currency:'PLN' });
+    const updateServiceSummary=() => {
+      const entries=[...serviceRows.querySelectorAll('tr')];
+      document.getElementById('service-row-count').textContent=`Liczba wierszy: ${entries.length}`;
+      const total=entries.reduce((sum,row) => sum+(Number(row.querySelector('.service-cost').value)||0),0);
+      document.getElementById('service-total').textContent=formatCost.format(total);
+    };
+    const addServiceRow=() => {
+      const row=document.createElement('tr');
+      row.innerHTML='<td class="row-marker">›</td><td><input type="date" aria-label="Data od"></td><td><input type="date" aria-label="Data do"></td><td><input type="date" aria-label="Data"></td><td><input aria-label="Nr zlecenia"></td><td><input aria-label="Typ serwisu"></td><td><input aria-label="Kontrahent"></td><td><input type="number" min="0" step="1" aria-label="Licznik"></td><td><input class="service-cost" type="number" min="0" step="0.01" aria-label="Koszt w złotych"></td><td><input type="checkbox" aria-label="Zakończono"></td><td><input aria-label="Zakres serwisu"></td>';
+      serviceRows.appendChild(row); updateServiceSummary(); return row;
+    };
+    for(let i=0;i<4;i++) addServiceRow();
+    document.getElementById('add-service-row').addEventListener('click',()=>{ addServiceRow().querySelector('input').focus(); show('Dodano nową pozycję serwisową'); });
+    serviceRows.addEventListener('input',updateServiceSummary);
+    document.getElementById('service-search').addEventListener('input',event=>{
+      const phrase=event.target.value.trim().toLocaleLowerCase('pl');
+      serviceRows.querySelectorAll('tr').forEach(row=>{
+        const values=[...row.querySelectorAll('input:not([type="checkbox"])')].map(field=>field.value).join(' ').toLocaleLowerCase('pl');
+        row.style.display=!phrase || values.includes(phrase) ? '' : 'none';
+      });
+    });
+    const equipmentRecords=[];
+    const sampleGroups=[
+      {model:'EO-150', producer:'EOVE', count:3, price:1822.73, produced:'2020-06-12', bought:'2020-06-12'},
+      {model:'Trilogy Evo', producer:'Philips Respironics', count:6, price:17309.10, produced:'2019-12-31', bought:'2020-03-27'},
+      {model:'BiPAP 40', producer:'Philips Respironics', count:18, price:10224.37, produced:'2020-04-30', bought:'2020-04-30'},
+      {model:'Trilogy 100', producer:'Philips Respironics', count:7, price:14235.02, produced:'2020-06-25', bought:'2020-06-25'}
+    ];
+    sampleGroups.forEach((group,groupIndex)=>{
+      for(let index=0;index<group.count;index++){
+        const number=equipmentRecords.length+1;
+        const status=number%17===0?'ZLIKWIDOWANY':number%11===0?'USZKODZONY':number%8===0?'DO ZWROTU':number%13===0?'W NAPRAWIE':'AKTYWNY';
+        const locationType=status==='W NAPRAWIE'?'SERWIS':number%5===0?'MAGAZYN POZ':'PACJENT';
+        equipmentRecords.push({id:`eq-${number}`,type:'Respirator',model:group.model,producer:group.producer,serial:`DEMO-${String(groupIndex+1).padStart(2,'0')}-${String(index+1).padStart(3,'0')}`,passport:`2020/${String(130+number)}`,status,ownership:'własny',productionDate:group.produced,purchaseDate:group.bought,purchaseValue:group.price,installationDate:'',disposalDate:status==='ZLIKWIDOWANY'?'2024-12-31':'',nextReview:'',marker:'',locationType,currentLocation:locationType==='MAGAZYN POZ'?'Magazyn Poznań':locationType==='SERWIS'?'Serwis zewnętrzny':'ANDENT S.C.',origin:'ST.VINCENT'});
+      }
+    });
+    const equipmentBody=document.getElementById('equipment-rows');
+    const equipmentList=document.getElementById('equipment-list-screen');
+    const equipmentCard=document.getElementById('equipment-card-screen');
+    const main=document.querySelector('.main');
+    const formatNumber=new Intl.NumberFormat('pl-PL',{minimumFractionDigits:2,maximumFractionDigits:2});
+    const formatDate=value=>{ if(!value) return ''; const parts=value.split('-'); return parts.length===3&&parts[0].length===4?`${parts[2]}-${parts[1]}-${parts[0]}`:value; };
+    const toIsoDate=value=>{ if(!value) return ''; const parts=value.trim().split(/[.\-/]/); return parts.length===3&&parts[0].length===4?`${parts[0]}-${parts[1]}-${parts[2]}`:parts.length===3&&parts[2].length===4?`${parts[2]}-${parts[1]}-${parts[0]}`:value; };
+    const fieldIn=(scope,label)=>[...scope.querySelectorAll('.form-row')].find(row=>row.querySelector('label')?.textContent.trim()===label)?.querySelector('input, select');
+    const basicScope=document.querySelector('#equipment-card-screen .record-head');
+    const cardFields={
+      type:fieldIn(basicScope,'Typ:'),model:fieldIn(basicScope,'Model:'),producer:fieldIn(basicScope,'Producent:'),serial:fieldIn(basicScope,'Nr seryjny:'),passport:fieldIn(basicScope,'Nr paszportu:'),status:fieldIn(basicScope,'Status:'),ownership:fieldIn(basicScope,'Typ własności:'),productionDate:fieldIn(basicScope,'Data produkcji:'),installationDate:fieldIn(basicScope,'Data instalacji:'),disposalDate:fieldIn(basicScope,'Data likwidacji:'),nextReview:fieldIn(basicScope,'Nast. przegląd:'),marker:fieldIn(basicScope,'Dod. znacznik:'),origin:fieldIn(basicScope,'Pochodzenie:'),purchaseDate:fieldIn(document.getElementById('purchase'),'Data zakupu:'),purchaseValue:fieldIn(document.getElementById('purchase'),'Wartość zakupu:'),locationType:fieldIn(document.getElementById('location'),'Typ lokalizacji:'),currentLocation:fieldIn(document.getElementById('location'),'Nazwa:')
+    };
+    const fixedControls=[...equipmentCard.querySelectorAll('.record-head input, .record-head select, #location input, #location select, #extra input, #purchase input, #counter input')];
+    const captureControls=controls=>[...controls].map(control=>({type:control.tagName==='INPUT'?control.type:null,value:control.value,checked:control.checked||false}));
+    const restoreControls=(controls,states)=>[...controls].forEach((control,index)=>{ const state=states[index]; if(!state) return; if(control.tagName==='INPUT'&&state.type) control.type=state.type; control.value=state.value; if(control.type==='checkbox') control.checked=state.checked; });
+    const captureRows=body=>[...body.querySelectorAll('tr')].map(row=>captureControls(row.querySelectorAll('input, select')));
+    const restoreRows=(body,states,addRow)=>{ body.replaceChildren(); states.forEach(values=>{ const row=addRow(); restoreControls(row.querySelectorAll('input, select'),values); }); };
+    const captureCardState=()=>({fixed:captureControls(fixedControls),locations:captureRows(rows),services:captureRows(serviceRows)});
+    const emptyCardState=captureCardState();
+    const restoreCardState=state=>{ restoreControls(fixedControls,state.fixed); restoreRows(rows,state.locations,addLocationRow); restoreRows(serviceRows,state.services,addServiceRow); updateServiceSummary(); document.getElementById('location-search').value=''; document.getElementById('service-search').value=''; };
+    const dateFields=new Set(['productionDate','purchaseDate','installationDate','disposalDate','nextReview']);
+    const populateCard=record=>Object.entries(cardFields).forEach(([key,field])=>{ if(!field) return; const value=record[key]; field.value=dateFields.has(key)?formatDate(value):key==='purchaseValue'&&value!==''&&value!=null?formatNumber.format(Number(value)):value??''; });
+    let activeRecordId=null;
+    let selectedRecordId=equipmentRecords[0].id;
+    const currentRecord=()=>equipmentRecords.find(record=>record.id===activeRecordId);
+    const saveCurrentCardState=()=>{ const record=currentRecord(); if(record) record.cardState=captureCardState(); };
+    const updateCardHeading=record=>{ document.getElementById('card-heading').textContent=[record.type,record.model,record.serial].filter(Boolean).join(' · ')||'Nowy sprzęt'; };
+    const equipmentMatches=(record,phrase)=>!phrase||Object.values(record).filter(value=>typeof value==='string'||typeof value==='number').join(' ').toLocaleLowerCase('pl').includes(phrase);
+    const visibleRecords=()=>{ const mainPhrase=document.getElementById('equipment-search').value.trim().toLocaleLowerCase('pl'); const filterPhrase=document.getElementById('filter-search').value.trim().toLocaleLowerCase('pl'); return equipmentRecords.filter(record=>equipmentMatches(record,mainPhrase)&&equipmentMatches(record,filterPhrase)); };
+    const renderEquipmentList=()=>{
+      equipmentBody.replaceChildren(); const visible=visibleRecords();
+      visible.forEach(record=>{
+        const row=document.createElement('tr'); row.tabIndex=0; row.setAttribute('role','button'); row.dataset.id=record.id; row.setAttribute('aria-label',`Otwórz kartę: ${record.type} ${record.model}, ${record.serial}`); if(record.id===selectedRecordId) row.classList.add('selected');
+        const checkCell=document.createElement('td'); checkCell.className='select-col'; const check=document.createElement('input'); check.type='checkbox'; check.setAttribute('aria-label',`Zaznacz ${record.model} ${record.serial}`); check.checked=record.id===selectedRecordId; check.addEventListener('click',event=>{ event.stopPropagation(); selectedRecordId=record.id; renderEquipmentList(); }); checkCell.appendChild(check); row.appendChild(checkCell);
+        const values=[record.type,record.model,record.producer,record.serial,record.passport,record.status?.toLocaleLowerCase('pl'),record.ownership,formatDate(record.productionDate),formatDate(record.purchaseDate),record.purchaseValue===''?'':formatNumber.format(Number(record.purchaseValue)),formatDate(record.installationDate),formatDate(record.disposalDate),formatDate(record.nextReview),record.marker,record.locationType?.toLocaleLowerCase('pl'),record.currentLocation,record.origin];
+        values.forEach(value=>{ const cell=document.createElement('td'); cell.textContent=value??''; row.appendChild(cell); });
+        row.addEventListener('click',()=>openEquipment(record.id));
+        row.addEventListener('keydown',event=>{ if(event.key==='Enter'||event.key===' '){ event.preventDefault(); openEquipment(record.id); } });
+        equipmentBody.appendChild(row);
+      });
+      document.getElementById('equipment-count').textContent=`Liczba sprzętów: ${visible.length}`;
+    };
+    const openEquipment=id=>{
+      saveCurrentCardState(); const record=equipmentRecords.find(item=>item.id===id); if(!record) return;
+      activeRecordId=id; selectedRecordId=id; restoreCardState(record.cardState||emptyCardState); if(!record.cardState) populateCard(record);
+      document.querySelector('[data-tab="location"]').click(); updateCardHeading(record);
+      equipmentList.hidden=true; equipmentCard.hidden=false; main.classList.remove('list-mode'); document.title=`${record.model||'Nowy sprzęt'} — Symfonia`; window.scrollTo(0,0);
+    };
+    const backToList=()=>{ saveCurrentCardState(); equipmentCard.hidden=true; equipmentList.hidden=false; main.classList.add('list-mode'); document.title='Symfonia — Kartoteka sprzętu'; renderEquipmentList(); window.scrollTo(0,0); };
+    const addEquipment=()=>{ const id=`eq-${equipmentRecords.length+1}`; equipmentRecords.push({id,type:'',model:'',producer:'',serial:'',passport:'',status:'',ownership:'',productionDate:'',purchaseDate:'',purchaseValue:'',installationDate:'',disposalDate:'',nextReview:'',marker:'',locationType:'',currentLocation:'',origin:''}); openEquipment(id); };
+    document.getElementById('back-to-list').addEventListener('click',backToList);
+    document.getElementById('open-equipment').addEventListener('click',()=>{ const firstVisible=visibleRecords()[0]; const selected=visibleRecords().find(record=>record.id===selectedRecordId)||firstVisible; if(selected) openEquipment(selected.id); else show('Brak sprzętu do otwarcia'); });
+    document.getElementById('new-equipment').addEventListener('click',addEquipment);
+    document.getElementById('new-equipment-card').addEventListener('click',addEquipment);
+    document.getElementById('save-equipment').addEventListener('click',()=>{
+      const record=currentRecord(); if(!record) return;
+      Object.entries(cardFields).forEach(([key,field])=>{ if(!field) return; record[key]=dateFields.has(key)?toIsoDate(field.value):key==='purchaseValue'?(Number(field.value.replace(/\s/g,'').replace(',','.'))||0):field.value; });
+      record.cardState=captureCardState(); updateCardHeading(record); renderEquipmentList(); show('Zapisano dane sprzętu w prototypie');
+    });
+    document.getElementById('equipment-search').addEventListener('input',renderEquipmentList);
+    document.getElementById('filter-search').addEventListener('input',renderEquipmentList);
+    renderEquipmentList();
+  </script>
+</body>
+</html>
