@@ -28,7 +28,7 @@
     .action { height:30px; border:1px solid #b5b5b5; background:#fff; color:#3d3d3d; cursor:pointer; }
     .action:hover, .action:focus { background:#eef4ff; border-color:#5282c4; outline:none; }
     .workspace { display:grid; grid-template-columns:minmax(0, 1fr) 245px; gap:5px; margin-top:4px; }
-    .tabs { display:flex; align-items:end; height:28px; overflow:hidden; white-space:nowrap; }
+    .tabs { display:flex; align-items:end; min-height:28px; flex-wrap:wrap; white-space:nowrap; }
     .tab { height:24px; padding:0 11px; border:1px solid #c5c5c5; border-bottom:0; background:var(--tab); color:#333; cursor:pointer; }
     .tab + .tab { margin-left:-1px; } .tab.active { height:26px; border-top:4px solid var(--blue); padding-top:0; background:#fff; font-weight:bold; }
     .viewbox { min-height:592px; padding:24px 16px; border:1px solid var(--line); background:#fff; }
@@ -121,6 +121,38 @@
     .status { position:fixed; right:20px; bottom:16px; z-index:10; max-width:310px; padding:9px 13px; color:white; background:#333d4a; border-radius:3px; box-shadow:0 2px 8px #5558; opacity:0; transform:translateY(12px); transition:.2s; pointer-events:none; }
     .status.show { opacity:1; transform:translateY(0); }
     @media (max-width:1300px) { .basic { gap:8px 20px; grid-template-columns:250px 240px 250px; } .tabs .tab { padding:0 8px; } }
+    .fault-toolbar { display:flex; align-items:center; gap:12px; padding:12px; background:#eef0f2; }
+    .fault-toolbar input { margin-left:auto; max-width:340px; }
+    .fault-toolbar button { padding:0 14px; flex-shrink:0; }
+    .fault-notice { margin:0; padding:10px 12px; background:#f2f6fc; color:#42516a; line-height:1.5; border-bottom:1px solid #ccd7e7; }
+    .fault-table { width:100%; min-width:920px; border-collapse:collapse; table-layout:fixed; }
+    .fault-table th { background:#707784; color:white; text-align:left; font-weight:normal; padding:8px; }
+    .fault-table td { padding:10px 8px; border:1px solid #e2e2e2; vertical-align:top; overflow-wrap:anywhere; line-height:1.5; }
+    .fault-table tbody tr:nth-child(even) { background:#f7f8fa; }
+    .fault-table th:nth-child(1) { width:140px; }
+    .fault-table th:nth-child(2) { width:115px; }
+    .fault-table th:last-child { width:155px; }
+    .fault-table button { margin:2px; padding:4px 8px; background:white; border:1px solid #aaa; cursor:pointer; }
+    .fault-table button:disabled { color:#999; border-color:#ddd; cursor:not-allowed; }
+    .fault-table .equipment-link { color:#225da4; text-align:left; border:0; background:transparent; text-decoration:underline; }
+    .fault-summary { padding:10px 12px; color:#616975; border-top:1px solid #bbb; }
+    .fault-list { border:1px solid var(--line); min-height:520px; display:flex; flex-direction:column; }
+    .fault-list .location-table-wrap { min-height:300px; }
+    #all-faults-screen { padding:12px; }
+    .fault-dialog { padding:0; width:610px; max-width:95vw; border:1px solid #9ca6b5; color:var(--text); box-shadow:0 12px 50px #0005; }
+    .fault-dialog::backdrop { background:#1b273a66; }
+    .fault-dialog h2 { margin:0; padding:16px 20px; background:#eef0f2; font-size:17px; }
+    .fault-dialog form { padding:18px 20px; }
+    .fault-dialog label { display:block; font-weight:bold; margin:15px 0 5px; }
+    .fault-dialog select, .fault-dialog input { height:34px; }
+    .fault-dialog textarea { width:100%; min-height:90px; padding:8px; resize:vertical; font:13px Arial,sans-serif; border:1px solid #b8b8b8; }
+    .fault-dialog .dialog-actions { display:flex; justify-content:flex-end; gap:10px; margin-top:20px; }
+    .fault-dialog .dialog-actions button { min-width:105px; }
+    .fault-context { margin:0 0 10px; color:#536073; line-height:1.6; }
+    .fault-date { margin:0; color:#62676e; }
+    .fault-empty { text-align:center; padding:30px !important; color:#707784; }
+    .equipment-table th:nth-child(2) { width:165px; }
+    button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline:2px solid var(--blue); outline-offset:2px; }
   </style>
 </head>
 <body>
@@ -302,6 +334,159 @@
     });
     document.getElementById('equipment-search').addEventListener('input',renderEquipmentList);
     document.getElementById('filter-search').addEventListener('input',renderEquipmentList);
+    renderEquipmentList();
+  </script>
+  <dialog id="fault-dialog" class="fault-dialog" aria-labelledby="fault-dialog-title">
+    <h2 id="fault-dialog-title">Nowe zgłoszenie awarii</h2>
+    <form id="fault-form">
+      <p class="fault-context" id="fault-context"></p>
+      <p class="fault-date" id="fault-date"></p>
+      <label for="fault-reporter">Zgłaszający *</label><select id="fault-reporter" required></select>
+      <label for="fault-description">Opis zgłoszenia *</label><select id="fault-description" required></select>
+      <label for="fault-action">Działanie *</label><select id="fault-action" required></select>
+      <label for="fault-notes">Uwagi</label><textarea id="fault-notes" placeholder="Dodatkowe informacje (opcjonalnie)"></textarea>
+      <p class="fault-context">* Pola obowiązkowe. Zapis zgłoszenia nie zmienia statusu sprzętu w tym demo.</p>
+      <div class="dialog-actions"><button class="action" type="button" id="cancel-fault">Anuluj</button><button class="action" type="submit">Zapisz zgłoszenie</button></div>
+    </form>
+  </dialog>
+  <dialog id="delete-fault-dialog" class="fault-dialog" aria-labelledby="delete-fault-title">
+    <h2 id="delete-fault-title">Usuń ostatnie zgłoszenie</h2>
+    <form method="dialog"><p id="delete-fault-context" class="fault-context"></p><p>Status sprzętu pozostanie bez zmian.</p><div class="dialog-actions"><button class="action" value="cancel">Anuluj</button><button class="action" value="delete">Usuń zgłoszenie</button></div></form>
+  </dialog>
+  <script>
+    // Demo: reports are kept separately for each device during the current page session.
+    const faultDescriptions = {
+      'Respirator': ['wymagany przegląd','awaria wentylatora','awaria czujnika przepływu tlenu','awaria akumulatora','awaria zasilania','respirator niesprawny','alarmy, błędne działanie','uszkodzenie mechaniczne','awaria techniczna','uszkodzone akcesoria'],
+      'Koncentrator': ['żółta lampka','czerwona lampka','głośna praca','awaria sit molekularnych','awaria techniczna','uszkodzone akcesoria'],
+      'Ssak': ['awaria akumulatora','awaria zasilania','słaba moc','uszkodzenie mechaniczne','awaria techniczna','uszkodzone akcesoria'],
+      'Pulsoksymetr stacjonarny': ['awaria akumulatora','awaria zasilania','uszkodzenie mechaniczne','awaria techniczna','uszkodzone akcesoria'],
+      'Asystor kaszlu': ['awaria akumulatora','awaria zasilania','alarmy, błędne działanie','uszkodzenie mechaniczne','awaria techniczna','uszkodzone akcesoria'],
+      'Pozostałe sprzęty': ['awaria zasilania','uszkodzenie mechaniczne','awaria techniczna','uszkodzone akcesoria']
+    };
+    const faultReporters = ['pacjent','lekarz','pielęgniarka','rehabilitant','opiekun'];
+    const faultActions = ['Rozwiązano telefonicznie','Uszkodzone akcesoria','wysyłka sprzętu','wysłano serwisanta','wysłano personel','zgłoszony do serwisu zew.'];
+    const descriptionsFor = type => {
+      const key = Object.keys(faultDescriptions).find(key=>key.toLocaleLowerCase('pl')===type.trim().toLocaleLowerCase('pl'));
+      return faultDescriptions[key || 'Pozostałe sprzęty'];
+    };
+    const additionalEquipment = [
+      ['Koncentrator','Koncentrator demo'], ['Ssak','Ssak demo'],
+      ['Pulsoksymetr stacjonarny','Pulsoksymetr demo'], ['Asystor kaszlu','Asystor demo'],
+      ['Pozostałe sprzęty','Urządzenie pomocnicze demo']
+    ];
+    additionalEquipment.forEach(([type,model],index)=>{
+      equipmentRecords.push({id:`eq-demo-${index+1}`,type,model,producer:'Producent demo',serial:`DEMO-${String(index+5).padStart(2,'0')}-001`,passport:`2026/${index+1}`,status:'AKTYWNY',ownership:'własny',productionDate:'2025-04-10',purchaseDate:'2025-05-15',purchaseValue:0,installationDate:'',disposalDate:'',nextReview:'2027-05-15',marker:'DEMO',locationType:'MAGAZYN POZ',currentLocation:'Magazyn Poznań',origin:'Dane przykładowe'});
+    });
+    let faultSequence = 0;
+    equipmentRecords.forEach((record,index)=>{
+      const descriptions = descriptionsFor(record.type);
+      record.faults = ['2026-06-12T09:15:00','2026-08-21T14:30:00','2026-09-14T10:45:00'].map((date,i)=>({
+        id:`fault-${++faultSequence}`,sequence:faultSequence,createdAt:date,reporter:faultReporters[(index+i)%faultReporters.length],
+        description:descriptions[(index+i)%descriptions.length],action:faultActions[(index+i)%faultActions.length],
+        notes:['Przykładowe zgłoszenie podczas użytkowania sprzętu.','Przykładowy kontakt kontrolny ze zgłaszającym.','Zgłoszenie pokazowe — możliwa edycja i usunięcie.'][i]
+      }));
+    });
+    const faultTab = document.createElement('button');
+    faultTab.type='button'; faultTab.className='tab'; faultTab.dataset.tab='faults'; faultTab.textContent='AWARIE';
+    document.querySelector('[data-tab="service"]').after(faultTab);
+    const faultView = document.createElement('section'); faultView.className='view'; faultView.id='faults';
+    faultView.innerHTML='<div class="fault-list"><div class="fault-toolbar"><button type="button" class="action" id="new-fault">+ Nowe zgłoszenie</button><input type="search" id="fault-search" placeholder="Szukaj zgłoszenia" aria-label="Szukaj awarii sprzętu"></div><p class="fault-notice">Demo pokazowe: automatyczna zmiana statusu sprzętu jest wyłączona. Edytować i usuwać można wyłącznie ostatnio dodane zgłoszenie.</p><div class="location-table-wrap"><table class="fault-table"><thead><tr><th>Data zgłoszenia</th><th>Zgłaszający</th><th>Opis zgłoszenia</th><th>Działanie</th><th>Uwagi</th><th>Operacje</th></tr></thead><tbody id="fault-rows"></tbody></table></div><div class="fault-summary" id="fault-count"></div></div>';
+    document.querySelector('.viewbox').appendChild(faultView);
+    const allFaults = document.createElement('section'); allFaults.id='all-faults-screen'; allFaults.className='screen'; allFaults.hidden=true;
+    allFaults.innerHTML='<div class="backbar"><button type="button" id="back-from-faults">← Wróć do sprzętów</button><span>AWARIE — wszystkie zgłoszenia</span></div><div class="fault-list"><div class="fault-toolbar"><strong>Zgłoszenia awarii sprzętu</strong><input type="search" id="all-fault-search" placeholder="Szukaj sprzętu lub zgłoszenia" aria-label="Szukaj wszystkich awarii"></div><p class="fault-notice">Kliknij sprzęt, aby otworzyć jego zakładkę AWARIE i dodać zgłoszenie. Dane pokazowe i zmiany są dostępne do odświeżenia strony.</p><div class="location-table-wrap"><table class="fault-table"><thead><tr><th>Data zgłoszenia</th><th>Sprzęt</th><th>Zgłaszający</th><th>Opis zgłoszenia</th><th>Działanie</th><th>Uwagi</th></tr></thead><tbody id="all-fault-rows"></tbody></table></div><div class="fault-summary" id="all-fault-count"></div></div>';
+    main.appendChild(allFaults);
+    const allFaultsButton=document.createElement('button'); allFaultsButton.type='button'; allFaultsButton.id='open-all-faults';
+    allFaultsButton.innerHTML='<span class="open-symbol">⚠</span>AWARIE'; document.querySelector('.equipment-actions').appendChild(allFaultsButton);
+    const faultsOf = record => record.faults || (record.faults=[]);
+    const newestFault = record => faultsOf(record).reduce((latest,entry)=>!latest || entry.sequence>latest.sequence?entry:latest,null);
+    const faultDateFormat = new Intl.DateTimeFormat('pl-PL',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
+    const displayFaultDate = date => faultDateFormat.format(new Date(date));
+    const sortedFaults = entries => [...entries].sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt)||b.sequence-a.sequence);
+    const faultMatches = (entry,phrase) => !phrase || [displayFaultDate(entry.createdAt),entry.reporter,entry.description,entry.action,entry.notes].join(' ').toLocaleLowerCase('pl').includes(phrase);
+    const appendFaultCell=(row,value)=>{const cell=document.createElement('td'); cell.textContent=value; row.appendChild(cell); return cell;};
+    const emptyFaultTable=(body,message)=>{const row=document.createElement('tr'); const cell=appendFaultCell(row,message); cell.colSpan=6; cell.className='fault-empty'; body.appendChild(row);};
+    function renderFaults() {
+      const record=currentRecord(); if(!record) return;
+      const body=document.getElementById('fault-rows'); body.replaceChildren();
+      const entries=faultsOf(record), latest=newestFault(record);
+      const visible=sortedFaults(entries).filter(entry=>faultMatches(entry,document.getElementById('fault-search').value.trim().toLocaleLowerCase('pl')));
+      visible.forEach(entry=>{
+        const row=document.createElement('tr'); row.dataset.faultId=entry.id;
+        [displayFaultDate(entry.createdAt),entry.reporter,entry.description,entry.action,entry.notes].forEach(value=>appendFaultCell(row,value));
+        const actions=appendFaultCell(row,'');
+        [['Edytuj',()=>openFaultForm(entry.id)],['Usuń',()=>askDeleteFault(entry.id)]].forEach(([label,handler])=>{
+          const button=document.createElement('button'); button.type='button'; button.textContent=label; button.disabled=entry!==latest;
+          button.title=entry===latest?`${label} ostatnie zgłoszenie`:'Dostępne tylko dla ostatnio dodanego zgłoszenia';
+          button.addEventListener('click',handler); actions.appendChild(button);
+        }); body.appendChild(row);
+      });
+      if(!visible.length) emptyFaultTable(body,entries.length?'Brak zgłoszeń pasujących do wyszukiwania.':'Brak zgłoszeń. Kliknij „Nowe zgłoszenie”.');
+      document.getElementById('fault-count').textContent=`Zgłoszenia: ${visible.length} z ${entries.length} · Dane sesji demo — odświeżenie przywraca przykłady`;
+    }
+    function renderAllFaults() {
+      const body=document.getElementById('all-fault-rows'); body.replaceChildren();
+      const phrase=document.getElementById('all-fault-search').value.trim().toLocaleLowerCase('pl');
+      const entries=equipmentRecords.flatMap(record=>faultsOf(record).map(entry=>({...entry,record})));
+      const visible=sortedFaults(entries).filter(entry=>faultMatches(entry,phrase)||[entry.record.type,entry.record.model,entry.record.serial].join(' ').toLocaleLowerCase('pl').includes(phrase));
+      visible.forEach(entry=>{
+        const row=document.createElement('tr'); appendFaultCell(row,displayFaultDate(entry.createdAt)); const equipmentCell=appendFaultCell(row,'');
+        const button=document.createElement('button'); button.className='equipment-link'; button.type='button'; button.textContent=`${entry.record.type} · ${entry.record.model} · ${entry.record.serial}`;
+        button.addEventListener('click',()=>{allFaults.hidden=true; openEquipment(entry.record.id); faultTab.click();}); equipmentCell.appendChild(button);
+        [entry.reporter,entry.description,entry.action,entry.notes].forEach(value=>appendFaultCell(row,value)); body.appendChild(row);
+      });
+      if(!visible.length) emptyFaultTable(body,'Brak zgłoszeń pasujących do wyszukiwania.');
+      document.getElementById('all-fault-count').textContent=`Zgłoszenia: ${visible.length} z ${entries.length}`;
+    }
+    faultTab.addEventListener('click',()=>{
+      document.querySelectorAll('.tab').forEach(tab=>tab.classList.toggle('active',tab===faultTab));
+      document.querySelectorAll('.view').forEach(view=>view.classList.toggle('active',view===faultView));
+      document.getElementById('fault-search').value=''; renderFaults();
+    });
+    allFaultsButton.addEventListener('click',()=>{equipmentList.hidden=true; equipmentCard.hidden=true; allFaults.hidden=false; renderAllFaults(); document.title='Awarie sprzętu — Symfonia';});
+    document.getElementById('back-from-faults').addEventListener('click',()=>{allFaults.hidden=true; backToList();});
+    document.getElementById('fault-search').addEventListener('input',renderFaults);
+    document.getElementById('all-fault-search').addEventListener('input',renderAllFaults);
+    const faultDialog=document.getElementById('fault-dialog'), faultForm=document.getElementById('fault-form');
+    const reporterSelect=document.getElementById('fault-reporter'), descriptionSelect=document.getElementById('fault-description'), actionSelect=document.getElementById('fault-action');
+    fillChoices(reporterSelect,faultReporters,'Wybierz zgłaszającego'); fillChoices(actionSelect,faultActions,'Wybierz działanie');
+    let editingFaultId=null, faultRecordId=null, pendingDelete=null;
+    function openFaultForm(id=null) {
+      const record=currentRecord(); if(!record) return; const entry=id?faultsOf(record).find(item=>item.id===id):null;
+      if(id && (!entry || newestFault(record)!==entry)) return;
+      faultForm.reset(); editingFaultId=id; faultRecordId=record.id;
+      const type=cardFields.type.value.trim()||record.type;
+      descriptionSelect.replaceChildren(); fillChoices(descriptionSelect,descriptionsFor(type),'Wybierz opis zgłoszenia');
+      document.getElementById('fault-dialog-title').textContent=id?'Edytuj ostatnie zgłoszenie':'Nowe zgłoszenie awarii';
+      document.getElementById('fault-context').textContent=`${type||'Pozostałe sprzęty'} · ${cardFields.model.value||record.model} · ${cardFields.serial.value||record.serial}`;
+      document.getElementById('fault-date').textContent=entry?`Data zgłoszenia: ${displayFaultDate(entry.createdAt)}`:'Data i godzina zgłoszenia zostaną nadane przy zapisie.';
+      if(entry) { reporterSelect.value=entry.reporter; descriptionSelect.value=entry.description; actionSelect.value=entry.action; document.getElementById('fault-notes').value=entry.notes; }
+      faultDialog.showModal(); reporterSelect.focus();
+    }
+    document.getElementById('new-fault').addEventListener('click',()=>openFaultForm());
+    document.getElementById('cancel-fault').addEventListener('click',()=>faultDialog.close());
+    faultForm.addEventListener('submit',event=>{
+      event.preventDefault(); if(!faultForm.reportValidity()) return;
+      const record=equipmentRecords.find(item=>item.id===faultRecordId); if(!record) return;
+      const values={reporter:reporterSelect.value,description:descriptionSelect.value,action:actionSelect.value,notes:document.getElementById('fault-notes').value.trim()};
+      if(editingFaultId) {
+        const entry=faultsOf(record).find(item=>item.id===editingFaultId); if(!entry || newestFault(record)!==entry) return;
+        Object.assign(entry,values,{updatedAt:new Date().toISOString()});
+      } else faultsOf(record).push({...values,id:`fault-${++faultSequence}`,sequence:faultSequence,createdAt:new Date().toISOString()});
+      // Status transitions are intentionally disabled in this demonstration.
+      faultDialog.close(); document.getElementById('fault-search').value=''; renderFaults(); show('Zapisano zgłoszenie. Status sprzętu bez zmian.');
+    });
+    function askDeleteFault(id) {
+      const record=currentRecord(), entry=record && newestFault(record); if(!entry || entry.id!==id) return;
+      pendingDelete={recordId:record.id,id};
+      document.getElementById('delete-fault-context').textContent=`Usunąć zgłoszenie z ${displayFaultDate(entry.createdAt)}: „${entry.description}”?`;
+      const dialog=document.getElementById('delete-fault-dialog'); dialog.returnValue=''; dialog.showModal();
+    }
+    document.getElementById('delete-fault-dialog').addEventListener('close',event=>{
+      if(event.target.returnValue==='delete' && pendingDelete) {
+        const record=equipmentRecords.find(item=>item.id===pendingDelete.recordId);
+        if(record && newestFault(record)?.id===pendingDelete.id) {record.faults=record.faults.filter(entry=>entry.id!==pendingDelete.id); renderFaults(); show('Usunięto zgłoszenie. Status sprzętu bez zmian.');}
+      } pendingDelete=null;
+    });
     renderEquipmentList();
   </script>
 </body>
