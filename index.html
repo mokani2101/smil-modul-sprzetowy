@@ -217,9 +217,8 @@
       document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
       const view=document.getElementById(tab.dataset.tab); (view || document.getElementById('placeholder')).classList.add('active');
     }));
-    document.querySelectorAll('[data-action]').forEach(button=>button.addEventListener('click',()=>show(button.dataset.action)));
+    document.querySelectorAll('[data-action]').forEach(button=>button.addEventListener('click',()=>{if(!['Wydanie do pacjenta','Wydanie do serwisu'].includes(button.dataset.action))show(button.dataset.action+' — funkcja jeszcze niedostępna');}));
     document.querySelectorAll('.calendar').forEach(button=>button.addEventListener('click',()=>{ const input=button.previousElementSibling; input.type='date'; input.focus(); try { input.showPicker(); } catch(e) {} }));
-    document.getElementById('enter-counter').addEventListener('click',()=>{ const value=prompt('Wprowadź wartość licznika:'); if(value!==null && value.trim()!==''){ document.querySelector('input[style]').value=value; show('Wartość licznika została wprowadzona'); }});
     const locations = ['MAGAZYN POZ', 'MAGAZYN WAW', 'PACJENT', 'PERSONEL', 'SERWIS', 'MAGAZYN ZEW.'];
     const statuses = ['AKTYWNY', 'DO ZWROTU', 'USZKODZONY', 'W NAPRAWIE', 'W DEZYNFEKCJI', 'W TRANSPORCIE', 'ZWRÓCONY', 'SPRZEDANY', 'ZLIKWIDOWANY'];
     const fillChoices = (select, choices, label) => { if (select.options.length) return; select.add(new Option(label, '')); choices.forEach(choice => select.add(new Option(choice, choice))); };
@@ -297,6 +296,7 @@
     const populateCard=record=>Object.entries(cardFields).forEach(([key,field])=>{ if(!field) return; const value=record[key]; field.value=dateFields.has(key)?formatDate(value):key==='purchaseValue'&&value!==''&&value!=null?formatNumber.format(Number(value)):value??''; });
     let activeRecordId=null;
     let selectedRecordId=equipmentRecords[0].id;
+    const selectedEquipmentIds=new Set();
     const currentRecord=()=>equipmentRecords.find(record=>record.id===activeRecordId);
     const saveCurrentCardState=()=>{ const record=currentRecord(); if(record) record.cardState=captureCardState(); };
     const updateCardHeading=record=>{ document.getElementById('card-heading').textContent=[record.type,record.model,record.serial].filter(Boolean).join(' · ')||'Nowy sprzęt'; };
@@ -306,19 +306,19 @@
       equipmentBody.replaceChildren(); const visible=visibleRecords();
       visible.forEach(record=>{
         const row=document.createElement('tr'); row.tabIndex=0; row.setAttribute('role','button'); row.dataset.id=record.id; row.setAttribute('aria-label',`Otwórz kartę: ${record.type} ${record.model}, ${record.serial}`); if(record.id===selectedRecordId) row.classList.add('selected');
-        const checkCell=document.createElement('td'); checkCell.className='select-col'; const check=document.createElement('input'); check.type='checkbox'; check.setAttribute('aria-label',`Zaznacz ${record.model} ${record.serial}`); check.checked=record.id===selectedRecordId; check.addEventListener('click',event=>{ event.stopPropagation(); selectedRecordId=record.id; renderEquipmentList(); }); checkCell.appendChild(check); row.appendChild(checkCell);
+        const checkCell=document.createElement('td'); checkCell.className='select-col'; const check=document.createElement('input'); check.type='checkbox'; check.setAttribute('aria-label',`Zaznacz ${record.model} ${record.serial}`); check.checked=selectedEquipmentIds.has(record.id); check.addEventListener('click',event=>{ event.stopPropagation(); if(check.checked)selectedEquipmentIds.add(record.id);else selectedEquipmentIds.delete(record.id);selectedRecordId=record.id;renderEquipmentList(); });check.addEventListener('keydown',event=>event.stopPropagation()); checkCell.appendChild(check); row.appendChild(checkCell);
         const values=[record.type,record.model,record.producer,record.serial,record.passport,record.status?.toLocaleLowerCase('pl'),record.ownership,formatDate(record.productionDate),formatDate(record.purchaseDate),record.purchaseValue===''?'':formatNumber.format(Number(record.purchaseValue)),formatDate(record.installationDate),formatDate(record.disposalDate),formatDate(record.nextReview),record.marker,record.locationType?.toLocaleLowerCase('pl'),record.currentLocation,record.origin];
         values.forEach(value=>{ const cell=document.createElement('td'); cell.textContent=value??''; row.appendChild(cell); });
         row.addEventListener('click',()=>openEquipment(record.id));
         row.addEventListener('keydown',event=>{ if(event.key==='Enter'||event.key===' '){ event.preventDefault(); openEquipment(record.id); } });
         equipmentBody.appendChild(row);
       });
-      document.getElementById('equipment-count').textContent=`Liczba sprzętów: ${visible.length}`;
+      document.getElementById('equipment-count').textContent=`Liczba sprzętów: ${visible.length} · Zaznaczono: ${selectedEquipmentIds.size}`;
     };
     const openEquipment=id=>{
       saveCurrentCardState(); const record=equipmentRecords.find(item=>item.id===id); if(!record) return;
       activeRecordId=id; selectedRecordId=id; restoreCardState(record.cardState||emptyCardState); if(!record.cardState) populateCard(record);
-      document.querySelector('[data-tab="location"]').click(); updateCardHeading(record);
+      document.querySelector('[data-tab="location"]').click(); updateCardHeading(record); renderCounterHistory();
       equipmentList.hidden=true; equipmentCard.hidden=false; main.classList.remove('list-mode'); document.title=`${record.model||'Nowy sprzęt'} — Symfonia`; window.scrollTo(0,0);
     };
     const backToList=()=>{ saveCurrentCardState(); equipmentCard.hidden=true; equipmentList.hidden=false; main.classList.add('list-mode'); document.title='Symfonia — Kartoteka sprzętu'; renderEquipmentList(); window.scrollTo(0,0); };
@@ -336,6 +336,16 @@
     document.getElementById('filter-search').addEventListener('input',renderEquipmentList);
     renderEquipmentList();
   </script>
+  <dialog id="counter-dialog" class="fault-dialog" aria-labelledby="counter-dialog-title">
+    <h2 id="counter-dialog-title">Wprowadź wartość licznika</h2>
+    <form id="counter-form">
+      <p class="fault-context" id="counter-context"></p>
+      <label for="counter-value">Nowy stan licznika *</label>
+      <input id="counter-value" type="number" min="0" step="any" required>
+      <p class="fault-context">Data i godzina odczytu zostaną zapisane automatycznie.</p>
+      <div class="dialog-actions"><button class="action" id="cancel-counter" type="button">Anuluj</button><button class="action" type="submit">Zapisz odczyt</button></div>
+    </form>
+  </dialog>
   <dialog id="fault-dialog" class="fault-dialog" aria-labelledby="fault-dialog-title">
     <h2 id="fault-dialog-title">Nowe zgłoszenie awarii</h2>
     <form id="fault-form">
@@ -487,7 +497,330 @@
         if(record && newestFault(record)?.id===pendingDelete.id) {record.faults=record.faults.filter(entry=>entry.id!==pendingDelete.id); renderFaults(); show('Usunięto zgłoszenie. Status sprzętu bez zmian.');}
       } pendingDelete=null;
     });
+    const counterSupported=type=>['respirator','koncentrator'].includes((type||'').trim().toLocaleLowerCase('pl'));
+    equipmentRecords.forEach((record,index)=>{
+      record.counterHistory=counterSupported(record.type)?[
+        {date:'2026-06-12T09:15:00',value:1200+index*10,operation:'Odczyt okresowy'},
+        {date:'2026-08-21T14:30:00',value:1550+index*10,operation:'Odczyt kontrolny'},
+        {date:'2026-09-14T10:45:00',value:1800+index*10,operation:'Odczyt okresowy'}
+      ]:[];
+    });
+    const counterButton=document.getElementById('enter-counter');
+    const counterDialog=document.getElementById('counter-dialog');
+    const counterValue=document.getElementById('counter-value');
+    const counterStateField=fieldIn(basicScope,'Stan licznika:');
+    function renderCounterHistory() {
+      const record=currentRecord(); if(!record) return;
+      const supported=counterSupported(cardFields.type.value);
+      const history=supported?(record.counterHistory||[]):[];
+      const container=document.querySelector('#counter .empty-table'); container.replaceChildren();
+      container.setAttribute('aria-label','Historia odczytów licznika');
+      [...history].reverse().forEach(entry=>{
+        const row=document.createElement('div'); row.style.cssText='display:grid;grid-template-columns:90px 90px 1fr;border-bottom:1px solid #ddd;min-height:32px';
+        [formatDate(entry.date.slice(0,10)),String(entry.value).replace('.',','),entry.operation].forEach(value=>{const cell=document.createElement('span');cell.textContent=value;cell.style.cssText='padding:7px 8px;border-right:1px solid #ddd';row.appendChild(cell);});
+        row.title=displayFaultDate(entry.date); container.appendChild(row);
+      });
+      if(!history.length) {const empty=document.createElement('p');empty.style.cssText='padding:12px;line-height:1.5;color:#666';empty.textContent=supported?'Brak odczytów. Wprowadź pierwszy stan licznika.':'Historia licznika jest dostępna tylko dla respiratorów i koncentratorów.';container.appendChild(empty);}
+      document.querySelector('#counter .table-footer').textContent=`Liczba wierszy: ${history.length}`;
+      counterButton.disabled=!supported;
+      counterButton.title=supported?'Dodaj odczyt do historii':'Dostępne tylko dla respiratorów i koncentratorów';
+      counterStateField.value=history.length?history[history.length-1].value:'';
+      const calculationRows=[...document.querySelectorAll('#counter .counter-right fieldset:first-child .form-row')];
+      [history[history.length-2],history[history.length-1]].forEach((entry,index)=>{
+        const inputs=calculationRows[index].querySelectorAll('input');
+        inputs[0].value=entry?(inputs[0].type==='date'?entry.date.slice(0,10):formatDate(entry.date.slice(0,10))):'';
+        inputs[1].value=entry?entry.value:'';
+      });
+      const previous=history[history.length-2],last=history[history.length-1];
+      const differenceInputs=calculationRows[2].querySelectorAll('input');
+      const days=previous&&last?(new Date(last.date)-new Date(previous.date))/86400000:0;
+      differenceInputs[0].value=days>0?Math.round(days*100)/100:'';
+      differenceInputs[1].value=previous&&last?Math.round((last.value-previous.value)*100)/100:'';
+      calculationRows[3].querySelector('input').value=days>0&&last.value>=previous.value?Math.round((last.value-previous.value)/days*100)/100:'';
+    }
+    document.querySelector('[data-tab="counter"]').addEventListener('click',renderCounterHistory);
+    cardFields.type.addEventListener('change',renderCounterHistory);
+    counterButton.addEventListener('click',()=>{
+      const record=currentRecord(); if(!record||!counterSupported(cardFields.type.value)) return;
+      counterValue.value=''; document.getElementById('counter-context').textContent=`${cardFields.type.value} · ${cardFields.model.value} · ${cardFields.serial.value}`;
+      counterDialog.showModal();counterValue.focus();
+    });
+    document.getElementById('cancel-counter').addEventListener('click',()=>counterDialog.close());
+    document.getElementById('counter-form').addEventListener('submit',event=>{
+      event.preventDefault();const record=currentRecord();const value=Number(counterValue.value);
+      if(!record||!counterSupported(cardFields.type.value)||!event.target.reportValidity()||!Number.isFinite(value)||value<0)return;
+      (record.counterHistory||(record.counterHistory=[])).push({date:new Date().toISOString(),value,operation:'Odczyt ręczny'});
+      renderCounterHistory();saveCurrentCardState();counterDialog.close();show('Dodano odczyt do historii licznika');
+    });
     renderEquipmentList();
+  </script>
+  <style>
+    #dispatch-dialog { width:760px; max-height:92vh; overflow:auto; }
+    .dispatch-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+    #dispatch-form .check-row { display:flex; align-items:flex-start; gap:10px; margin:10px 0; font-weight:normal; line-height:1.5; }
+    #dispatch-form .check-row input { width:17px; height:17px; flex:0 0 17px; margin-top:1px; accent-color:var(--blue); }
+    #dispatch-checklist fieldset { margin-top:14px; padding:8px 12px; }
+    .dispatch-warning { background:#fff4d9; border:1px solid #dfc275; padding:12px; line-height:1.5; margin-top:14px; }
+    .dispatch-error { color:#a72121; line-height:1.5; }
+    .dispatch-register { border:1px solid var(--line); min-height:500px; }
+    .dispatch-register h3 { margin:0; padding:12px; background:#eef0f2; }
+    .dispatch-register details { border-bottom:1px solid #ccc; padding:12px; }
+    .dispatch-register summary { cursor:pointer; line-height:1.6; }
+    .dispatch-register li { line-height:1.7; }
+    .dispatch-register p { padding:0 12px; line-height:1.6; }
+  </style>
+  <dialog id="dispatch-dialog" class="fault-dialog" aria-labelledby="dispatch-title">
+    <h2 id="dispatch-title">Wydanie sprzętu do pacjenta lub personelu</h2>
+    <form id="dispatch-form">
+      <p id="dispatch-equipment" class="fault-context"></p>
+      <div class="dispatch-grid">
+        <div><label for="dispatch-kind">Rodzaj wydania *</label><select id="dispatch-kind" required><option value="PACJENT">PACJENT</option><option value="PERSONEL">PERSONEL</option></select></div>
+        <div><label for="dispatch-date">Data wydania *</label><input id="dispatch-date" type="date" required></div>
+      </div>
+      <label for="dispatch-recipient">Odbiorca — dane fikcyjne *</label><select id="dispatch-recipient" required></select>
+      <p id="dispatch-recipient-info" class="fault-context"></p>
+      <p id="dispatch-error" class="dispatch-error" role="alert"></p>
+      <div id="dispatch-confirm-box" class="dispatch-warning" hidden>
+        <span id="dispatch-location-warning"></span>
+        <label class="check-row"><input id="dispatch-confirm" type="checkbox">Potwierdzam wydanie sprzętu z lokalizacji innej niż magazyn.</label>
+      </div>
+      <h3>Kontrola przed zatwierdzeniem wydania</h3>
+      <p class="fault-context">Odhacz wykonane czynności dla wskazanego sprzętu. Lista zgodna z typem sprzętu; model jest podany powyżej.</p>
+      <div id="dispatch-checklist"></div>
+      <div id="dispatch-flow-box" hidden><label for="dispatch-flow">Zmierzony przepływ [L/min] *</label><input id="dispatch-flow" type="number" min="0.01" step="any" inputmode="decimal"></div>
+      <div class="dialog-actions"><button class="action" id="cancel-dispatch" type="button">Anuluj</button><button class="action" id="confirm-dispatch" type="submit">Zatwierdź wydanie</button></div>
+    </form>
+  </dialog>
+  <script>
+    const demoRecipients=[
+      {id:'patient-1',kind:'PACJENT',code:'X-DEMO-001',name:'Anna Przykładowa',region:'wielkopolskie',city:'Poznań'},
+      {id:'patient-2',kind:'PACJENT',code:'X-DEMO-002',name:'Jan Pokazowy',region:'mazowieckie',city:'Warszawa'},
+      {id:'patient-3',kind:'PACJENT',code:'X-DEMO-003',name:'Maria Testowa',region:'małopolskie',city:'Kraków'},
+      {id:'patient-4',kind:'PACJENT',code:'Y-DEMO-004',name:'Piotr Demonstracyjny',region:'pomorskie',city:'Gdańsk'},
+      {id:'patient-invalid',kind:'PACJENT',code:'DEMO-005',name:'Odbiorca testowy bez prefiksu',region:'łódzkie',city:'Łódź'},
+      {id:'staff-1',kind:'PERSONEL',code:'Y-DEMO-101',name:'Ewa Przykładowa — pielęgniarka',region:'wielkopolskie',city:'Poznań'},
+      {id:'staff-2',kind:'PERSONEL',code:'Y-DEMO-102',name:'Adam Pokazowy — lekarz',region:'mazowieckie',city:'Warszawa'},
+      {id:'staff-3',kind:'PERSONEL',code:'Y-DEMO-103',name:'Katarzyna Testowa — rehabilitantka',region:'małopolskie',city:'Kraków'},
+      {id:'staff-4',kind:'PERSONEL',code:'X-DEMO-104',name:'Tomasz Demonstracyjny — opiekun',region:'pomorskie',city:'Gdańsk'},
+      {id:'staff-invalid',kind:'PERSONEL',code:'DEMO-105',name:'Personel testowy bez prefiksu',region:'łódzkie',city:'Łódź'}
+    ];
+    const dispatchPowerChecks=['Podłączenie do zasilania','Sprawdzenie poprawności ładowania','Sprawdzenie obudowy pod kątem pęknięć oraz ruchomych elementów'];
+    const dispatchAccessoryChecks=['Zaopatrzenie urządzenia w filtry wymienne zgodnie z instrukcją','Dołożenie akcesoriów zgodnie z zapotrzebowaniem'];
+    const dispatchChecklists={
+      'respirator':[
+        ['Sprawdzenie poprawności działania',dispatchPowerChecks],
+        ['Wymiana filtrów i akcesoriów',dispatchAccessoryChecks],
+        ['Ustawienie alarmów',['Zmiana języka na język polski','Ustawienie alarmu odłączenia obwodu na min. 5 sek (jeśli taki alarm jest dostępny w menu)']]
+      ],
+      'ssak':[
+        ['Sprawdzenie poprawności działania',dispatchPowerChecks],
+        ['Wymiana filtrów i akcesoriów',dispatchAccessoryChecks],
+        ['Sprawdzenie wartości podciśnienia',['Uzyskanie maksymalnego podciśnienia zgodnie z instrukcją']],
+        ['Sprawdzenie wyświetlanych parametrów',['Sprawdzenie możliwości regulacji mocy podciśnienia zgodnie z instrukcją']]
+      ],
+      'pulsoksymetr':[
+        ['Sprawdzenie poprawności działania',dispatchPowerChecks],
+        ['Czujnik i baterie',['Zaopatrzenie urządzenia w czujnik','Zaopatrzenie w potrzebne baterie (jeśli konieczne)']],
+        ['Sprawdzenie wyświetlanych parametrów',['Sprawdzenie poprawności wyświetlanych parametrów']]
+      ],
+      'koncentrator':[
+        ['Sprawdzenie poprawności działania',dispatchPowerChecks],
+        ['Wymiana filtrów i akcesoriów',dispatchAccessoryChecks],
+        ['Sprawdzenie wartości przepływu',['Uruchomienie urządzenia na min. 10 minut z ustawionym przepływem ok. 2,5 L/min']],
+        ['Sprawdzenie wyświetlanych parametrów',['Sprawdzenie możliwości regulacji przepływu']]
+      ]
+    };
+    const dispatchType=()=>{const type=cardFields.type.value.trim().toLocaleLowerCase('pl');return type==='pulsoksymetr stacjonarny'?'pulsoksymetr':type;};
+    const dispatchDialog=document.getElementById('dispatch-dialog'), dispatchForm=document.getElementById('dispatch-form');
+    const dispatchKind=document.getElementById('dispatch-kind'),dispatchRecipient=document.getElementById('dispatch-recipient');
+    const dispatchError=document.getElementById('dispatch-error'),dispatchFlow=document.getElementById('dispatch-flow');
+    const dispatchLocation=()=>cardFields.locationType.value.trim().toUpperCase();
+    const dispatchIsWarehouse=()=>['MAGAZYN POZ','MAGAZYN WAW','MAGAZYN ZEW.'].includes(dispatchLocation());
+    const selectedRecipient=()=>demoRecipients.find(item=>item.id===dispatchRecipient.value&&item.kind===dispatchKind.value);
+    let dispatchRecordId=null,dispatchSequence=0;
+    const issueView=document.createElement('section');issueView.id='issue';issueView.className='view';
+    issueView.innerHTML='<div class="dispatch-register"><h3>Rejestr wydań i kontroli sprzętu</h3><p>Wydanie rozpocznij przyciskiem „Wydanie do pacjenta / personelu” w panelu Operacje.</p><div id="dispatch-register-entries"></div></div>';
+    document.querySelector('.viewbox').appendChild(issueView);
+    function renderDispatchRegister(){
+      const container=document.getElementById('dispatch-register-entries');container.replaceChildren();
+      const entries=currentRecord()?.dispatches||[];
+      if(!entries.length){const empty=document.createElement('p');empty.textContent='Brak zapisanych wydań dla tego sprzętu.';container.appendChild(empty);return;}
+      [...entries].reverse().forEach(entry=>{
+        const detail=document.createElement('details'),summary=document.createElement('summary');
+        summary.textContent=`${formatDate(entry.date)} · ${entry.kind} · ${entry.recipient.code} · ${entry.recipient.name}`;detail.appendChild(summary);
+        const info=document.createElement('p');info.textContent=`${entry.type} · ${entry.model} · Z lokalizacji: ${entry.from||'nieokreślona'} · Status po wydaniu: AKTYWNY${entry.flow!==null?` · Przepływ: ${String(entry.flow).replace('.',',')} L/min`:''}`;detail.appendChild(info);
+        const list=document.createElement('ul');entry.checks.forEach(check=>{const li=document.createElement('li');li.textContent=`✓ ${check.group}: ${check.label}`;list.appendChild(li);});detail.appendChild(list);
+        const saved=document.createElement('p');saved.textContent=`Zapis kontroli: ${displayFaultDate(entry.savedAt)}${entry.confirmedNonWarehouse?' · Potwierdzono wydanie spoza magazynu.':''}`;detail.appendChild(saved);container.appendChild(detail);
+      });
+    }
+    document.querySelector('[data-tab="issue"]').addEventListener('click',renderDispatchRegister);
+    function validateDispatchRecipient(){
+      const recipient=selectedRecipient();const valid=!recipient||/^[XY]/.test(recipient.code);
+      dispatchRecipient.setCustomValidity(valid?'':'Odbiorca musi posiadać kod z prefiksem X lub Y.');
+      dispatchError.textContent=valid?'':'Wydanie zablokowane: kod odbiorcy nie ma wymaganego prefiksu X/Y.';
+      document.getElementById('dispatch-recipient-info').textContent=recipient?`${recipient.kind} · ${recipient.city} · woj. ${recipient.region}`:'';
+    }
+    function fillDispatchRecipients(){
+      dispatchRecipient.replaceChildren(new Option('Wybierz odbiorcę',''));
+      demoRecipients.filter(item=>item.kind===dispatchKind.value).forEach(item=>dispatchRecipient.add(new Option(`${item.code} — ${item.name}`,item.id)));
+      validateDispatchRecipient();
+    }
+    dispatchKind.addEventListener('change',fillDispatchRecipients);dispatchRecipient.addEventListener('change',validateDispatchRecipient);
+    const dispatchButton=document.querySelector('[data-action="Wydanie do pacjenta"]');dispatchButton.textContent='Wydanie do pacjenta / personelu';
+    dispatchButton.addEventListener('click',()=>{
+      const record=currentRecord();if(!record||equipmentCard.hidden)return;
+      if(dispatchLocation()==='SERWIS'){show('Wydanie zablokowane: sprzęt znajduje się w SERWISIE.');return;}
+      const groups=dispatchChecklists[dispatchType()];
+      if(!groups){show('Dla tego typu sprzętu nie zdefiniowano jeszcze checklisty wydania.');return;}
+      dispatchRecordId=record.id;dispatchForm.reset();fillDispatchRecipients();
+      const date=new Date();document.getElementById('dispatch-date').value=`${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
+      document.getElementById('dispatch-equipment').textContent=`${cardFields.type.value} · ${cardFields.model.value} · ${cardFields.serial.value}`;
+      const confirmationNeeded=!dispatchIsWarehouse();
+      document.getElementById('dispatch-confirm-box').hidden=!confirmationNeeded;
+      document.getElementById('dispatch-confirm').required=confirmationNeeded;
+      document.getElementById('dispatch-location-warning').textContent=`Aktualna lokalizacja: ${dispatchLocation()||'nieokreślona'}. Wydanie spoza magazynu wymaga dodatkowego potwierdzenia.`;
+      const list=document.getElementById('dispatch-checklist');list.replaceChildren();
+      groups.forEach(([group,checks])=>{
+        const fieldset=document.createElement('fieldset'),legend=document.createElement('legend');legend.textContent=group;fieldset.appendChild(legend);
+        checks.forEach(text=>{const label=document.createElement('label');label.className='check-row';const input=document.createElement('input');input.type='checkbox';input.required=true;input.dataset.group=group;input.dataset.check=text;label.append(input,document.createTextNode(text));fieldset.appendChild(label);});list.appendChild(fieldset);
+      });
+      const needsFlow=dispatchType()==='koncentrator';dispatchFlow.required=needsFlow;dispatchFlow.disabled=!needsFlow;document.getElementById('dispatch-flow-box').hidden=!needsFlow;
+      dispatchDialog.showModal();dispatchKind.focus();
+    });
+    document.getElementById('cancel-dispatch').addEventListener('click',()=>dispatchDialog.close());
+    dispatchForm.addEventListener('submit',event=>{
+      event.preventDefault();const record=currentRecord();if(!record||record.id!==dispatchRecordId)return;
+      if(dispatchLocation()==='SERWIS'){dispatchError.textContent='Wydanie zablokowane: sprzęt znajduje się w SERWISIE.';return;}
+      validateDispatchRecipient();const recipient=selectedRecipient();
+      if(!dispatchForm.reportValidity()||!recipient||!/^[XY]/.test(recipient.code))return;
+      if(!dispatchIsWarehouse()&&!document.getElementById('dispatch-confirm').checked)return;
+      const type=dispatchType(),flow=type==='koncentrator'?Number(dispatchFlow.value):null;
+      if(type==='koncentrator'&&(!Number.isFinite(flow)||flow<=0))return;
+      const checkboxes=[...document.querySelectorAll('#dispatch-checklist input')];if(!checkboxes.length||checkboxes.some(input=>!input.checked))return;
+      const entry={id:`dispatch-${++dispatchSequence}`,date:document.getElementById('dispatch-date').value,savedAt:new Date().toISOString(),kind:dispatchKind.value,recipient:{...recipient},from:dispatchLocation(),type:cardFields.type.value,model:cardFields.model.value,flow,confirmedNonWarehouse:!dispatchIsWarehouse(),checks:checkboxes.map(input=>({group:input.dataset.group,label:input.dataset.check,checked:true}))};
+      (record.dispatches||(record.dispatches=[])).push(entry);
+      cardFields.locationType.value=entry.kind;cardFields.currentLocation.value=recipient.name;cardFields.status.value='AKTYWNY';
+      const external=document.querySelector('#location .location-form');
+      external.querySelectorAll('input').forEach(input=>input.value='');
+      fieldIn(external,'Kod:').value=recipient.code;fieldIn(external,'Nazwa:').value=recipient.name;fieldIn(external,'Miasto:').value=recipient.city;
+      fieldIn(basicScope,'Województwo:').value=recipient.region;
+      const locationRow=addLocationRow();rows.prepend(locationRow);const fields=locationRow.querySelectorAll('input,select');
+      fields[0].value=entry.date;fields[1].value=entry.kind;fields[2].value=entry.kind;fields[5].value=recipient.name;fields[6].value=`Wydanie do ${recipient.code} — ${recipient.name}; kontrola ${entry.checks.length}/${entry.checks.length}${flow!==null?`; przepływ ${flow} L/min`:''}`;
+      document.getElementById('location-search').value='';rows.querySelectorAll('tr').forEach(row=>row.style.display='');
+      record.locationType=entry.kind;record.currentLocation=recipient.name;record.status='AKTYWNY';record.recipientId=recipient.id;record.region=recipient.region;
+      saveCurrentCardState();renderEquipmentList();dispatchDialog.close();document.querySelector('[data-tab="issue"]').click();show('Zapisano wydanie i wyniki kontroli sprzętu');
+    });
+  </script>
+  <style>
+    #equipment-card-screen button.feature-ready { background:#e3f2e5; border-color:#a9cdb0; }
+    #equipment-card-screen button.feature-pending { background:#fae3e3; border-color:#dcaeae; color:#824343; }
+    #equipment-card-screen button.feature-ready:hover { background:#d2e9d5; }
+    #equipment-card-screen button.feature-pending:hover { background:#f3d4d4; }
+    #equipment-card-screen button:disabled { opacity:.55; cursor:not-allowed; }
+    .feature-key { display:flex; gap:16px; padding:5px 0 9px; color:#59645e; }
+    .feature-key span { padding:4px 8px; border:1px solid #a9cdb0; background:#e3f2e5; }
+    .feature-key span:last-child { background:#fae3e3; border-color:#dcaeae; }
+    #service-order-dialog { width:700px; max-height:92vh; overflow:auto; }
+    #service-order-form .check-row { display:flex; align-items:center; gap:8px; line-height:1.5; font-weight:normal; }
+    #service-order-form .check-row input { width:17px; height:17px; flex:0 0 17px; }
+    #service-order-targets { max-height:160px; overflow:auto; padding-left:22px; line-height:1.6; }
+    #service-batch-result { margin:8px 0; padding:10px; border:1px solid #a9cdb0; background:#e3f2e5; line-height:1.6; }
+    #service-batch-result.is-error { border-color:#dcaeae; background:#fae3e3; color:#824343; }
+  </style>
+  <dialog id="service-order-dialog" class="fault-dialog" aria-labelledby="service-order-title">
+    <h2 id="service-order-title">Wydanie do serwisu</h2>
+    <form id="service-order-form">
+      <p id="service-order-context" class="fault-context"></p><ul id="service-order-targets"></ul>
+      <label for="service-order-provider">Serwis — dane fikcyjne *</label><select id="service-order-provider" required><option value="">Wybierz serwis</option><option>Serwis MedTech Demo — Poznań</option><option>Centrum Napraw Demo — Warszawa</option><option>Serwis Aparatury Demo — Kraków</option></select>
+      <label for="service-order-kind">Rodzaj zlecenia *</label><select id="service-order-kind" required><option value="">Wybierz rodzaj zlecenia</option><option>przegląd</option><option>naprawa</option><option>kontrola</option></select>
+      <label class="check-row"><input type="checkbox" id="service-order-move" checked>Zmień również lokalizację sprzętu spoza magazynów POZ/WAW na SERWIS</label>
+      <p class="fault-notice">Sprzęt z MAGAZYN POZ lub MAGAZYN WAW automatycznie otrzyma lokalizację SERWIS i status W NAPRAWIE. Dla pozostałych lokalizacji powyższa opcja decyduje o zmianie lokalizacji; status pozostaje bez zmian. Nowe zlecenie można dodać także do sprzętu będącego już w serwisie.</p>
+      <p id="service-order-error" class="dispatch-error" role="alert"></p>
+      <div class="dialog-actions"><button type="button" class="action" id="cancel-service-order">Anuluj</button><button type="submit" class="action">Utwórz zlecenia</button></div>
+    </form>
+  </dialog>
+  <script>
+    const serviceOrderDialog=document.getElementById('service-order-dialog');
+    const serviceOrderForm=document.getElementById('service-order-form');
+    const serviceOrderError=document.getElementById('service-order-error');
+    const batchServiceButton=document.createElement('button');batchServiceButton.type='button';batchServiceButton.id='batch-service-order';batchServiceButton.innerHTML='<span class="open-symbol">⚒</span>Wydanie do serwisu';
+    const clearServiceSelection=document.createElement('button');clearServiceSelection.type='button';clearServiceSelection.textContent='Wyczyść zaznaczenie';clearServiceSelection.addEventListener('click',()=>{selectedEquipmentIds.clear();renderEquipmentList();});
+    document.querySelector('.equipment-actions').append(batchServiceButton,clearServiceSelection);
+    const batchServiceResult=document.createElement('div');batchServiceResult.id='service-batch-result';batchServiceResult.hidden=true;batchServiceResult.setAttribute('role','status');document.querySelector('.equipment-actions').after(batchServiceResult);
+    let serviceOrderTargets=[],serviceOrderSequence=0;
+    const serviceRecordValue=(record,key)=>{
+      const field=cardFields[key];if(!equipmentCard.hidden&&currentRecord()===record&&field)return field.value;
+      const index=fixedControls.indexOf(field);return record.cardState&&index>=0?record.cardState.fixed[index].value:record[key]||'';
+    };
+    const serviceModelKey=record=>serviceRecordValue(record,'model').trim().toLocaleLowerCase('pl');
+    function openServiceOrders(ids){
+      serviceOrderTargets=[...new Set(ids)].filter(id=>equipmentRecords.some(record=>record.id===id));
+      if(!serviceOrderTargets.length){show('Najpierw zaznacz sprzęt na liście.');return;}
+      const targets=serviceOrderTargets.map(id=>equipmentRecords.find(record=>record.id===id));
+      if(targets.length>1&&(!serviceModelKey(targets[0])||targets.some(record=>serviceModelKey(record)!==serviceModelKey(targets[0])))){
+        batchServiceResult.hidden=false;batchServiceResult.classList.add('is-error');batchServiceResult.textContent='Nie utworzono zleceń: wszystkie zaznaczone urządzenia muszą być tego samego modelu.';return;
+      }
+      serviceOrderForm.reset();serviceOrderError.textContent='';
+      document.getElementById('service-order-context').textContent=`Liczba urządzeń: ${targets.length}. Dla każdego powstanie oddzielne zlecenie w zakładce Serwis.`;
+      const list=document.getElementById('service-order-targets');list.replaceChildren();targets.forEach(record=>{const li=document.createElement('li');li.textContent=`${serviceRecordValue(record,'model')||'Bez modelu'} · ${serviceRecordValue(record,'serial')||'Bez numeru'} · ${serviceRecordValue(record,'locationType')||'Lokalizacja nieokreślona'}`;list.appendChild(li);});
+      serviceOrderDialog.showModal();
+    }
+    document.querySelector('[data-action="Wydanie do serwisu"]').addEventListener('click',()=>{if(!equipmentCard.hidden&&currentRecord())openServiceOrders([currentRecord().id]);});
+    batchServiceButton.addEventListener('click',()=>openServiceOrders([...selectedEquipmentIds]));
+    document.getElementById('cancel-service-order').addEventListener('click',()=>serviceOrderDialog.close());
+    const copyState=value=>JSON.parse(JSON.stringify(value));
+    function serviceCardState(record){
+      if(record.cardState)return copyState(record.cardState);
+      const state=copyState(emptyCardState);
+      Object.entries(cardFields).forEach(([key,field])=>{const index=fixedControls.indexOf(field);if(index<0)return;const value=record[key];state.fixed[index].value=dateFields.has(key)?formatDate(value):key==='purchaseValue'&&value!==''&&value!=null?formatNumber.format(Number(value)):value??'';});
+      return state;
+    }
+    function setServiceStateField(state,field,value){const index=fixedControls.indexOf(field);if(index>=0)state.fixed[index].value=value;}
+    serviceOrderForm.addEventListener('submit',event=>{
+      event.preventDefault();if(!serviceOrderForm.reportValidity())return;
+      const targets=serviceOrderTargets.map(id=>equipmentRecords.find(record=>record.id===id));
+      if(targets.some(record=>!record)||!targets.length)return;
+      if(targets.length>1&&(!serviceModelKey(targets[0])||targets.some(record=>serviceModelKey(record)!==serviceModelKey(targets[0])))){serviceOrderError.textContent='Wszystkie urządzenia muszą mieć ten sam model.';return;}
+      if(!equipmentCard.hidden)saveCurrentCardState();
+      const provider=document.getElementById('service-order-provider').value,kind=document.getElementById('service-order-kind').value,move=document.getElementById('service-order-move').checked;
+      const now=new Date(),date=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+      const created=[];
+      targets.forEach(record=>{
+        const state=serviceCardState(record),from=serviceRecordValue(record,'locationType').trim().toUpperCase();
+        const warehouse=['MAGAZYN POZ','MAGAZYN WAW'].includes(from),changeLocation=warehouse||move;
+        const number=`SRV/${date.replaceAll('-','')}/${String(++serviceOrderSequence).padStart(4,'0')}`;
+        const entry={number,date,provider,kind,from,changeLocation,createdAt:now.toISOString()};
+        const serviceValues=[date,'',date,number,kind,provider,record.counterHistory?.length?record.counterHistory[record.counterHistory.length-1].value:'','',false,`Zlecenie: ${kind}`];
+        const serviceRow=copyState(emptyCardState.services[0]);serviceRow.forEach((cell,index)=>{if(cell.type==='checkbox')cell.checked=false;else cell.value=String(serviceValues[index]);});
+        state.services.unshift(serviceRow);(record.serviceOrders||(record.serviceOrders=[])).push(entry);
+        if(changeLocation){
+          setServiceStateField(state,cardFields.locationType,'SERWIS');setServiceStateField(state,cardFields.currentLocation,provider);
+          ['Kod:','Adres:','Kod pocztowy:','Miasto:','Email:','Nr telefonu 1:','Nr telefonu 2:'].forEach(label=>setServiceStateField(state,fieldIn(document.querySelector('#location .location-form'),label),''));
+          record.locationType='SERWIS';record.currentLocation=provider;record.recipientId=null;
+          const historyValues=[date,'SERWIS','SERWIS','','',provider,`${number} — ${kind}; serwis: ${provider}; poprzednia lokalizacja: ${from||'nieokreślona'}`];
+          const locationRow=copyState(emptyCardState.locations[0]);locationRow.forEach((cell,index)=>cell.value=historyValues[index]);state.locations.unshift(locationRow);
+        }
+        if(warehouse){record.status='W NAPRAWIE';setServiceStateField(state,cardFields.status,'W NAPRAWIE');}
+        record.cardState=state;created.push(`${number} — ${serviceRecordValue(record,'serial')||record.id}`);
+      });
+      if(!equipmentCard.hidden&&targets.includes(currentRecord())){restoreCardState(currentRecord().cardState);renderCounterHistory();document.querySelector('[data-tab="service"]').click();}
+      renderEquipmentList();serviceOrderDialog.close();
+      batchServiceResult.hidden=false;batchServiceResult.classList.remove('is-error');batchServiceResult.textContent=`Utworzono ${created.length} zleceń: ${created.join('; ')}. Szczegóły w zakładce Serwis każdej karty.`;
+      show(`Utworzono zlecenia serwisowe: ${created.length}`);
+    });
+    const featureKey=document.createElement('div');featureKey.className='feature-key';featureKey.innerHTML='<span>Działająca funkcja demo</span><span>Funkcja jeszcze niedostępna</span>';document.querySelector('.backbar').after(featureKey);
+    const liveTabs=new Set(['location','extra','purchase','counter','changes','service','faults','issue']);
+    function markCardFeatures(){
+      equipmentCard.querySelectorAll('button').forEach(button=>{
+        let ready=true;
+        if(button.dataset.tab)ready=liveTabs.has(button.dataset.tab);
+        if(button.dataset.action)ready=['Wydanie do pacjenta','Wydanie do serwisu'].includes(button.dataset.action);
+        button.classList.toggle('feature-ready',ready);button.classList.toggle('feature-pending',!ready);
+        if(!ready)button.title='Funkcja jeszcze niedostępna w prototypie';
+      });
+    }
+    markCardFeatures();
+    new MutationObserver(markCardFeatures).observe(equipmentCard,{childList:true,subtree:true});
   </script>
 </body>
 </html>
