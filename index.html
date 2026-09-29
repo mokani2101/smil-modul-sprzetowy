@@ -99,6 +99,7 @@
     .equipment-actions { display:flex; gap:18px; height:48px; align-items:center; padding-left:8px; }
     .equipment-actions button { border:0; background:transparent; cursor:pointer; color:#333; text-align:center; }
     .equipment-actions button:hover { color:#1f5ca8; }
+    #clear-equipment-selection { order:99; margin-left:auto; margin-right:12px; white-space:nowrap; }
     .equipment-actions .add-symbol { display:block; color:#33a949; font-size:27px; line-height:23px; }
     .equipment-actions .open-symbol { display:block; color:#686f79; font-size:18px; line-height:23px; }
     .equipment-search { width:100%; height:24px; margin-bottom:2px; font-style:italic; }
@@ -165,7 +166,7 @@
     <main class="main list-mode">
       <section class="screen equipment-browser" id="equipment-list-screen" aria-label="Lista sprzętu medycznego">
         <aside class="filters-panel"><div class="filters-heading">Filtry</div><input id="filter-search" type="search" placeholder="Szukaj" aria-label="Filtruj sprzęt"></aside>
-        <div class="equipment-content"><div class="equipment-title">Sprzęt medyczny</div><div class="equipment-actions"><button id="new-equipment" type="button"><span class="add-symbol">+</span>Dodaj</button><button id="open-equipment" type="button"><span class="open-symbol">▣</span>Otwórz</button></div><input class="equipment-search" id="equipment-search" type="search" placeholder="Szukaj" aria-label="Szukaj sprzętu"><div class="equipment-table-wrap"><table class="equipment-table"><thead><tr><th class="select-col"></th><th>Typ</th><th>Model</th><th>Producent</th><th>Nr seryjny</th><th>Nr paszportu</th><th>Status</th><th>Typ własności</th><th>Data produkcji</th><th>Data zakupu</th><th>Wartość zakupu</th><th>Data instalacji</th><th>Data likwidacji</th><th>Następny przegląd</th><th>Dod. znacznik</th><th>Typ lokalizacji</th><th>Akt. lokalizacja</th><th>Pochodzenie</th></tr></thead><tbody id="equipment-rows"></tbody></table></div><div class="equipment-list-footer"><span id="equipment-count"></span><span>Dane przykładowe prototypu</span></div></div>
+        <div class="equipment-content"><div class="equipment-title">Sprzęt medyczny</div><div class="equipment-actions"><button id="new-equipment" type="button"><span class="add-symbol">+</span>Dodaj</button><button id="open-equipment" type="button"><span class="open-symbol">▣</span>Otwórz</button></div><input class="equipment-search" id="equipment-search" type="search" placeholder="Szukaj" aria-label="Szukaj sprzętu"><div class="equipment-table-wrap"><table class="equipment-table"><thead><tr><th class="select-col"></th><th>Typ</th><th>Model</th><th>Producent</th><th>Nr seryjny</th><th>Nr paszportu</th><th>Status</th><th>Typ własności</th><th>Data produkcji</th><th>Data zakupu</th><th>Wartość zakupu</th><th>Data instalacji</th><th>Data likwidacji</th><th>Następny przegląd</th><th>NFZ znacznik</th><th>Typ lokalizacji</th><th>Akt. lokalizacja</th><th>Pochodzenie</th></tr></thead><tbody id="equipment-rows"></tbody></table></div><div class="equipment-list-footer"><span id="equipment-count"></span><span>Dane przykładowe prototypu</span></div></div>
       </section>
       <section class="screen" id="equipment-card-screen" aria-label="Karta sprzętu" hidden>
       <div class="backbar"><button id="back-to-list" type="button">← Wróć do listy</button><span id="card-heading"></span></div>
@@ -176,7 +177,7 @@
           </div><div class="stack">
             <div class="form-row"><label>Data produkcji:</label><div class="date-input"><input placeholder="Select a date"><button class="calendar" type="button">15</button></div></div><div class="form-row"><label>Data instalacji:</label><div class="date-input"><input placeholder="Select a date"><button class="calendar" type="button">15</button></div></div><div class="form-row"><label>Data likwidacji:</label><div class="date-input"><input placeholder="Select a date"><button class="calendar" type="button">15</button></div></div><div class="form-row"><label>Nast. przegląd:</label><div class="date-input"><input placeholder="Select a date"><button class="calendar" type="button">15</button></div></div>
           </div><div class="stack">
-            <div class="form-row"><label>Status:</label><select id="status-choice"></select></div><div class="form-row"><label>Typ własności:</label><input></div><div class="form-row"><label>Województwo:</label><input></div><div class="form-row"><label>Dod. znacznik:</label><input></div><div class="form-row"><label>Pochodzenie:</label><input></div><div class="form-row"><label>Stan licznika:</label><input style="max-width:100px"></div>
+            <div class="form-row"><label>Status:</label><select id="status-choice"></select></div><div class="form-row"><label>Typ własności:</label><input></div><div class="form-row"><label>Województwo:</label><input></div><div class="form-row"><label>NFZ znacznik:</label><input></div><div class="form-row"><label>Pochodzenie:</label><input></div><div class="form-row"><label>Stan licznika:</label><input style="max-width:100px"></div>
           </div>
         </div></fieldset>
         <fieldset class="print-panel"><legend>Wydruk</legend><button class="action" data-action="Druk paszportu">Drukuj paszport</button><button class="action" data-action="Druk dodatkowej strony paszportu">Drukuj dod. str. paszportu</button></fieldset>
@@ -282,7 +283,7 @@
     const fieldIn=(scope,label)=>[...scope.querySelectorAll('.form-row')].find(row=>row.querySelector('label')?.textContent.trim()===label)?.querySelector('input, select');
     const basicScope=document.querySelector('#equipment-card-screen .record-head');
     const cardFields={
-      type:fieldIn(basicScope,'Typ:'),model:fieldIn(basicScope,'Model:'),producer:fieldIn(basicScope,'Producent:'),serial:fieldIn(basicScope,'Nr seryjny:'),passport:fieldIn(basicScope,'Nr paszportu:'),status:fieldIn(basicScope,'Status:'),ownership:fieldIn(basicScope,'Typ własności:'),productionDate:fieldIn(basicScope,'Data produkcji:'),installationDate:fieldIn(basicScope,'Data instalacji:'),disposalDate:fieldIn(basicScope,'Data likwidacji:'),nextReview:fieldIn(basicScope,'Nast. przegląd:'),marker:fieldIn(basicScope,'Dod. znacznik:'),origin:fieldIn(basicScope,'Pochodzenie:'),purchaseDate:fieldIn(document.getElementById('purchase'),'Data zakupu:'),purchaseValue:fieldIn(document.getElementById('purchase'),'Wartość zakupu:'),locationType:fieldIn(document.getElementById('location'),'Typ lokalizacji:'),currentLocation:fieldIn(document.getElementById('location'),'Nazwa:')
+      type:fieldIn(basicScope,'Typ:'),model:fieldIn(basicScope,'Model:'),producer:fieldIn(basicScope,'Producent:'),serial:fieldIn(basicScope,'Nr seryjny:'),passport:fieldIn(basicScope,'Nr paszportu:'),status:fieldIn(basicScope,'Status:'),ownership:fieldIn(basicScope,'Typ własności:'),productionDate:fieldIn(basicScope,'Data produkcji:'),installationDate:fieldIn(basicScope,'Data instalacji:'),disposalDate:fieldIn(basicScope,'Data likwidacji:'),nextReview:fieldIn(basicScope,'Nast. przegląd:'),marker:fieldIn(basicScope,'NFZ znacznik:'),origin:fieldIn(basicScope,'Pochodzenie:'),purchaseDate:fieldIn(document.getElementById('purchase'),'Data zakupu:'),purchaseValue:fieldIn(document.getElementById('purchase'),'Wartość zakupu:'),locationType:fieldIn(document.getElementById('location'),'Typ lokalizacji:'),currentLocation:fieldIn(document.getElementById('location'),'Nazwa:')
     };
     const fixedControls=[...equipmentCard.querySelectorAll('.record-head input, .record-head select, #location input, #location select, #extra input, #purchase input, #counter input')];
     const captureControls=controls=>[...controls].map(control=>({type:control.tagName==='INPUT'?control.type:null,value:control.value,checked:control.checked||false}));
@@ -329,7 +330,11 @@
     document.getElementById('new-equipment-card').addEventListener('click',addEquipment);
     document.getElementById('save-equipment').addEventListener('click',()=>{
       const record=currentRecord(); if(!record) return;
+      const previousMarker=record.marker||'';
       Object.entries(cardFields).forEach(([key,field])=>{ if(!field) return; record[key]=dateFields.has(key)?toIsoDate(field.value):key==='purchaseValue'?(Number(field.value.replace(/\s/g,'').replace(',','.'))||0):field.value; });
+      if(record.status==='ZLIKWIDOWANY'&&previousMarker){
+        record.marker='';cardFields.marker.value='';registerNfzChange(record,previousMarker,'',toIsoDate(cardFields.disposalDate.value)||nfzToday(),'Likwidacja sprzętu');
+      }
       record.cardState=captureCardState(); updateCardHeading(record); renderEquipmentList(); show('Zapisano dane sprzętu w prototypie');
     });
     document.getElementById('equipment-search').addEventListener('input',renderEquipmentList);
@@ -397,7 +402,7 @@
       }));
     });
     const faultTab = document.createElement('button');
-    faultTab.type='button'; faultTab.className='tab'; faultTab.dataset.tab='faults'; faultTab.textContent='AWARIE';
+    faultTab.type='button'; faultTab.className='tab'; faultTab.dataset.tab='faults'; faultTab.textContent='Awarie';
     document.querySelector('[data-tab="service"]').after(faultTab);
     const faultView = document.createElement('section'); faultView.className='view'; faultView.id='faults';
     faultView.innerHTML='<div class="fault-list"><div class="fault-toolbar"><button type="button" class="action" id="new-fault">+ Nowe zgłoszenie</button><input type="search" id="fault-search" placeholder="Szukaj zgłoszenia" aria-label="Szukaj awarii sprzętu"></div><p class="fault-notice">Demo pokazowe: automatyczna zmiana statusu sprzętu jest wyłączona. Edytować i usuwać można wyłącznie ostatnio dodane zgłoszenie.</p><div class="location-table-wrap"><table class="fault-table"><thead><tr><th>Data zgłoszenia</th><th>Zgłaszający</th><th>Opis zgłoszenia</th><th>Działanie</th><th>Uwagi</th><th>Operacje</th></tr></thead><tbody id="fault-rows"></tbody></table></div><div class="fault-summary" id="fault-count"></div></div>';
@@ -579,7 +584,9 @@
       </div>
       <label for="dispatch-recipient">Odbiorca — dane fikcyjne *</label><select id="dispatch-recipient" required></select>
       <p id="dispatch-recipient-info" class="fault-context"></p>
+      <div id="dispatch-nfz-info" class="fault-context"><p id="dispatch-nfz-summary"></p><div id="dispatch-nfz-table-wrap" class="dispatch-nfz-table-wrap" hidden><table class="location-table dispatch-nfz-table"><thead><tr><th>Typ</th><th>Model</th><th>Nr seryjny</th><th>Lokalizacja</th><th>NFZ znacznik</th></tr></thead><tbody id="dispatch-nfz-table-body"></tbody></table></div></div>
       <p id="dispatch-error" class="dispatch-error" role="alert"></p>
+      <div id="dispatch-nfz-confirm" class="dispatch-warning" hidden><p id="dispatch-nfz-question"></p><div class="dialog-actions"><button type="button" class="action" id="dispatch-nfz-no">Nie — przerwij</button><button type="button" class="action" id="dispatch-nfz-yes">Tak — kontynuuj</button></div></div>
       <div id="dispatch-confirm-box" class="dispatch-warning" hidden>
         <span id="dispatch-location-warning"></span>
         <label class="check-row"><input id="dispatch-confirm" type="checkbox">Potwierdzam wydanie sprzętu z lokalizacji innej niż magazyn.</label>
@@ -593,10 +600,13 @@
   </dialog>
   <script>
     const demoRecipients=[
-      {id:'patient-1',kind:'PACJENT',code:'X-DEMO-001',name:'Anna Przykładowa',region:'wielkopolskie',city:'Poznań'},
-      {id:'patient-2',kind:'PACJENT',code:'X-DEMO-002',name:'Jan Pokazowy',region:'mazowieckie',city:'Warszawa'},
-      {id:'patient-3',kind:'PACJENT',code:'X-DEMO-003',name:'Maria Testowa',region:'małopolskie',city:'Kraków'},
-      {id:'patient-4',kind:'PACJENT',code:'Y-DEMO-004',name:'Piotr Demonstracyjny',region:'pomorskie',city:'Gdańsk'},
+      {id:'patient-1',kind:'PACJENT',code:'X-DEMO-001',name:'Anna Przykładowa',region:'wielkopolskie',city:'Poznań',nfzGroup:'DOR',nfzService:'NIV-1.0-172',nfzVariant:'III'},
+      {id:'patient-2',kind:'PACJENT',code:'X-DEMO-002',name:'Jan Pokazowy',region:'mazowieckie',city:'Warszawa',nfzGroup:'DOR',nfzService:'INV-171'},
+      {id:'patient-3',kind:'PACJENT',code:'X-DEMO-003',name:'Maria Testowa',region:'małopolskie',city:'Kraków',nfzGroup:'DZI',nfzService:'INV-DZ-174'},
+      {id:'patient-4',kind:'PACJENT',code:'Y-DEMO-004',name:'Piotr Demonstracyjny',region:'dolnośląskie',city:'Wrocław',nfzGroup:'DOR',nfzService:'NIV2-0.7-232'},
+      {id:'patient-5',kind:'PACJENT',code:'X-DEMO-006',name:'Ola Pokazowa',region:'wielkopolskie',city:'Kalisz',nfzGroup:'DZI',nfzService:'NIV-DZ-175',nfzVariant:'IV'},
+      {id:'patient-6',kind:'PACJENT',code:'X-DEMO-007',name:'Robert Testowy',region:'lubuskie',city:'Zielona Góra',nfzGroup:'TLEN',nfzService:'TLENOTERAPIA'},
+      {id:'patient-7',kind:'PACJENT',code:'X-DEMO-008',name:'Zofia Przykładowa',region:'mazowieckie',city:'Radom',nfzGroup:'HOSP',nfzService:'HOSPICJUM'},
       {id:'patient-invalid',kind:'PACJENT',code:'DEMO-005',name:'Odbiorca testowy bez prefiksu',region:'łódzkie',city:'Łódź'},
       {id:'staff-1',kind:'PERSONEL',code:'Y-DEMO-101',name:'Ewa Przykładowa — pielęgniarka',region:'wielkopolskie',city:'Poznań'},
       {id:'staff-2',kind:'PERSONEL',code:'Y-DEMO-102',name:'Adam Pokazowy — lekarz',region:'mazowieckie',city:'Warszawa'},
@@ -637,7 +647,7 @@
     const dispatchLocation=()=>cardFields.locationType.value.trim().toUpperCase();
     const dispatchIsWarehouse=()=>['MAGAZYN POZ','MAGAZYN WAW','MAGAZYN ZEW.'].includes(dispatchLocation());
     const selectedRecipient=()=>demoRecipients.find(item=>item.id===dispatchRecipient.value&&item.kind===dispatchKind.value);
-    let dispatchRecordId=null,dispatchSequence=0;
+    let dispatchRecordId=null,dispatchSequence=0,nfzDispatchConfirmed=false;
     const issueView=document.createElement('section');issueView.id='issue';issueView.className='view';
     issueView.innerHTML='<div class="dispatch-register"><h3>Rejestr wydań i kontroli sprzętu</h3><p>Wydanie rozpocznij przyciskiem „Wydanie do pacjenta / personelu” w panelu Operacje.</p><div id="dispatch-register-entries"></div></div>';
     document.querySelector('.viewbox').appendChild(issueView);
@@ -659,20 +669,22 @@
       dispatchRecipient.setCustomValidity(valid?'':'Odbiorca musi posiadać kod z prefiksem X lub Y.');
       dispatchError.textContent=valid?'':'Wydanie zablokowane: kod odbiorcy nie ma wymaganego prefiksu X/Y.';
       document.getElementById('dispatch-recipient-info').textContent=recipient?`${recipient.kind} · ${recipient.city} · woj. ${recipient.region}`:'';
+      updateDispatchNfzInfo();
     }
     function fillDispatchRecipients(){
       dispatchRecipient.replaceChildren(new Option('Wybierz odbiorcę',''));
       demoRecipients.filter(item=>item.kind===dispatchKind.value).forEach(item=>dispatchRecipient.add(new Option(`${item.code} — ${item.name}`,item.id)));
       validateDispatchRecipient();
     }
-    dispatchKind.addEventListener('change',fillDispatchRecipients);dispatchRecipient.addEventListener('change',validateDispatchRecipient);
+    dispatchKind.addEventListener('change',()=>{nfzDispatchConfirmed=false;document.getElementById('dispatch-nfz-confirm').hidden=true;fillDispatchRecipients();});
+    dispatchRecipient.addEventListener('change',()=>{nfzDispatchConfirmed=false;document.getElementById('dispatch-nfz-confirm').hidden=true;validateDispatchRecipient();});
     const dispatchButton=document.querySelector('[data-action="Wydanie do pacjenta"]');dispatchButton.textContent='Wydanie do pacjenta / personelu';
     dispatchButton.addEventListener('click',()=>{
       const record=currentRecord();if(!record||equipmentCard.hidden)return;
       if(dispatchLocation()==='SERWIS'){show('Wydanie zablokowane: sprzęt znajduje się w SERWISIE.');return;}
       const groups=dispatchChecklists[dispatchType()];
       if(!groups){show('Dla tego typu sprzętu nie zdefiniowano jeszcze checklisty wydania.');return;}
-      dispatchRecordId=record.id;dispatchForm.reset();fillDispatchRecipients();
+      dispatchRecordId=record.id;nfzDispatchConfirmed=false;dispatchForm.reset();fillDispatchRecipients();
       const date=new Date();document.getElementById('dispatch-date').value=`${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
       document.getElementById('dispatch-equipment').textContent=`${cardFields.type.value} · ${cardFields.model.value} · ${cardFields.serial.value}`;
       const confirmationNeeded=!dispatchIsWarehouse();
@@ -697,7 +709,17 @@
       const type=dispatchType(),flow=type==='koncentrator'?Number(dispatchFlow.value):null;
       if(type==='koncentrator'&&(!Number.isFinite(flow)||flow<=0))return;
       const checkboxes=[...document.querySelectorAll('#dispatch-checklist input')];if(!checkboxes.length||checkboxes.some(input=>!input.checked))return;
+      const nfz=dispatchKind.value==='PACJENT'?checkNfzDispatch(record,recipient):null;
+      if(nfz?.error){dispatchError.textContent=nfz.error;return;}
+      if(nfz?.alternatives.length&&!nfzDispatchConfirmed){
+        document.getElementById('dispatch-nfz-question').textContent=`W magazynie jest sprzęt ze znacznikiem ${nfz.expected} (tabela powyżej). Czy chcesz mimo to zmienić znacznik ${nfz.previous||'(brak)'} na ${nfz.expected} i wydać obecny sprzęt?`;
+        document.getElementById('dispatch-nfz-confirm').hidden=false;return;
+      }
       const entry={id:`dispatch-${++dispatchSequence}`,date:document.getElementById('dispatch-date').value,savedAt:new Date().toISOString(),kind:dispatchKind.value,recipient:{...recipient},from:dispatchLocation(),type:cardFields.type.value,model:cardFields.model.value,flow,confirmedNonWarehouse:!dispatchIsWarehouse(),checks:checkboxes.map(input=>({group:input.dataset.group,label:input.dataset.check,checked:true}))};
+      if(nfz?.expected&&nfz.previous!==nfz.expected){
+        cardFields.marker.value=nfz.expected;record.marker=nfz.expected;
+        registerNfzChange(record,nfz.previous,nfz.expected,entry.date,`Wydanie do pacjenta ${recipient.code}`);
+      }
       (record.dispatches||(record.dispatches=[])).push(entry);
       cardFields.locationType.value=entry.kind;cardFields.currentLocation.value=recipient.name;cardFields.status.value='AKTYWNY';
       const external=document.querySelector('#location .location-form');
@@ -744,7 +766,7 @@
     const serviceOrderForm=document.getElementById('service-order-form');
     const serviceOrderError=document.getElementById('service-order-error');
     const batchServiceButton=document.createElement('button');batchServiceButton.type='button';batchServiceButton.id='batch-service-order';batchServiceButton.innerHTML='<span class="open-symbol">⚒</span>Wydanie do serwisu';
-    const clearServiceSelection=document.createElement('button');clearServiceSelection.type='button';clearServiceSelection.textContent='Wyczyść zaznaczenie';clearServiceSelection.addEventListener('click',()=>{selectedEquipmentIds.clear();renderEquipmentList();});
+    const clearServiceSelection=document.createElement('button');clearServiceSelection.type='button';clearServiceSelection.id='clear-equipment-selection';clearServiceSelection.textContent='Wyczyść zaznaczenia';clearServiceSelection.addEventListener('click',()=>{selectedEquipmentIds.clear();renderEquipmentList();});
     document.querySelector('.equipment-actions').append(batchServiceButton,clearServiceSelection);
     const batchServiceResult=document.createElement('div');batchServiceResult.id='service-batch-result';batchServiceResult.hidden=true;batchServiceResult.setAttribute('role','status');document.querySelector('.equipment-actions').after(batchServiceResult);
     let serviceOrderTargets=[],serviceOrderSequence=0;
@@ -821,6 +843,197 @@
     }
     markCardFeatures();
     new MutationObserver(markCardFeatures).observe(equipmentCard,{childList:true,subtree:true});
+  </script>
+  <style>
+    .nfz-panel { border:1px solid var(--line); min-height:500px; background:#fff; }
+    .nfz-panel h3 { margin:0; padding:12px; background:#eef0f2; font-size:14px; }
+    .nfz-panel .fault-notice { border-bottom:1px solid #ccd7e7; }
+    .nfz-card-list { min-height:546px; border:1px solid var(--line); display:flex; flex-direction:column; }
+    .nfz-card-list .location-table-wrap { min-height:400px; }
+    .nfz-history-table { min-width:1000px; }
+    .nfz-history-table th:first-child, .nfz-history-table td:first-child { width:110px; }
+    .nfz-history-table th:nth-child(1) { width:110px; }
+    .nfz-history-table th:nth-child(2), .nfz-history-table th:nth-child(3) { width:155px; }
+    .nfz-history-table th:nth-child(4) { width:210px; }
+    .nfz-history-table th:nth-child(5) { width:155px; }
+    .nfz-history-table th:nth-child(6) { width:170px; }
+    .nfz-table-wrap { overflow:auto; }
+    .nfz-report-table { min-width:1150px; width:100%; }
+    .nfz-report-table th:nth-child(2) { width:130px; }
+    .nfz-report-table th:nth-child(3) { width:150px; }
+    .nfz-report-table th:nth-child(4), .nfz-report-table th:nth-child(5) { width:160px; }
+    .nfz-report-table th:nth-child(6) { width:115px; }
+    .nfz-report-table th:nth-child(7) { width:210px; }
+    .nfz-report-table input[type="checkbox"] { width:15px; height:15px; accent-color:var(--blue); vertical-align:middle; }
+    .nfz-report-table small { display:block; color:#606875; margin-top:3px; }
+    .nfz-empty { padding:15px; color:#69717d; }
+    .nfz-report-filters { display:flex; align-items:end; flex-wrap:wrap; gap:12px; padding:12px; background:#eef0f2; }
+    .nfz-report-filters label { display:flex; flex-direction:column; gap:5px; font-weight:bold; }
+    .nfz-report-filters input, .nfz-report-filters select { min-width:175px; }
+    .nfz-report-filters button { min-width:125px; }
+    .nfz-report-results[hidden] { display:none; }
+    .nfz-report-actor { display:flex; align-items:center; gap:10px; padding:9px 12px; background:#f7f8fa; }
+    .nfz-report-actor input { max-width:240px; }
+    .nfz-report-error { color:#a72121; padding:0 12px; }
+    #nfz-report-screen { padding:12px; }
+    #dispatch-nfz-confirm .dialog-actions { margin-top:8px; }
+    #dispatch-nfz-info { margin:8px 0; }
+    #dispatch-nfz-summary { margin:0 0 5px; }
+    .dispatch-nfz-table-wrap { max-height:155px; overflow:auto; border:1px solid var(--line); }
+    .dispatch-nfz-table { min-width:560px; font-size:12px; }
+    .dispatch-nfz-table th:first-child, .dispatch-nfz-table td:first-child { width:auto; }
+    .dispatch-nfz-table th, .dispatch-nfz-table td { width:auto !important; padding:4px 7px; }
+    .dispatch-nfz-table tbody tr:nth-child(even) td { background:#f3f4f6; }
+  </style>
+  <script>
+    // Słownik NFZ otrzymany od użytkownika. Wariant III/IV przypisano pacjentom demonstracyjnym.
+    const nfzRegions={
+      'małopolskie':{DOR:'MAŁ-DOR.',DZI:'MAŁ-DZI.'},
+      'dolnośląskie':{DOR:'DOL-DOR.',DZI:'DOL-DZI.'},
+      'podkarpackie':{DOR:'PODK-DOR.',DZI:'PODK-DZI.'},
+      'lubuskie':{DOR:'LUBU-DOR.',DZI:'LUBU-DZI.',TLEN:'TLEN-LUB'},
+      'podlaskie':{DOR:'PODL-DOR.',DZI:'PODL-DZI.'},
+      'lubelskie':{DOR:'LUBE-DOR.',DZI:'LUBE-DZI.'},
+      'świętokrzyskie':{DOR:'ŚWIE-DOR.',DZI:'ŚWIE-DZI.'},
+      'mazowieckie':{DOR:'MAZ-DOR.',DZI:'MAZ-DZI.',TLEN:'TLEN-MAZ',HOSP:'HOSP-MAZ'},
+      'warmińsko-mazurskie':{DOR:'WARM-DOR.',DZI:'WARM-DZI.'},
+      'łódzkie':{DOR:'ŁÓDŹ-DOR.',DZI:'ŁÓDŹ-DZI.'},
+      'opolskie':{DOR:'OPOL-DOR.',DZI:'OPOL-DZI.'},
+      'śląskie':{DOR:'ŚLĄS-DOR.',DZI:'ŚLĄS-DZI.'},
+      'zachodniopomorskie':{DOR:'ZACH-DOR.',DZI:'ZACH-DZI.'},
+      'wielkopolskie':{
+        DOR:{III:'WIEL-DOR.-III',IV:'WIEL-DOR.-IV'},
+        DZI:{III:'WIEL-DZI.-III',IV:'WIEL-DZI..-IV'},HOSP:'HOSP-WIEL'
+      }
+    };
+    const nfzCodes=[...new Set(Object.values(nfzRegions).flatMap(groups=>Object.values(groups).flatMap(value=>typeof value==='string'?[value]:Object.values(value))))].sort((a,b)=>a.localeCompare(b,'pl'));
+    equipmentRecords.forEach((record,index)=>{
+      // Stałe, rozproszone znaczniki pokazowe: ta sama karta ma ten sam znacznik po odświeżeniu.
+      const seed=Math.imul((index+1)^0x9e3779b9,0x85ebca6b);
+      record.marker=record.status==='ZLIKWIDOWANY'?'':nfzCodes[(seed>>>0)%nfzCodes.length];
+    });
+    const nfzAdultServices=new Set(['INV-171','NIV-1.0-172','NIV1-0.7-173','NIV2-0.7-232','NIV3-0.7-233','NIV-DZ-175']);
+    const nfzChildServices=new Set(['INV-DZ-174','NIV-DZ-175']);
+    const nfzToday=()=>{const date=new Date();return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;};
+    function expectedNfzMarker(recipient){
+      if(!recipient)return {error:'Wybierz pacjenta.'};
+      const region=nfzRegions[recipient.region?.toLocaleLowerCase('pl')];
+      if(!region)return {error:`Brak znacznika NFZ dla województwa ${recipient.region}.`};
+      const group=recipient.nfzGroup,service=recipient.nfzService;
+      const permitted=group==='DOR'?nfzAdultServices.has(service):group==='DZI'?nfzChildServices.has(service):group==='TLEN'?service==='TLENOTERAPIA':group==='HOSP'?service==='HOSPICJUM':false;
+      if(!permitted)return {error:'Brak zgodnej grupy świadczenia NFZ dla pacjenta.'};
+      const choice=region[group],marker=typeof choice==='string'?choice:choice?.[recipient.nfzVariant];
+      return marker?{marker}:{error:`Brak znacznika NFZ dla województwa ${recipient.region} i grupy ${group}${recipient.nfzVariant?` / ${recipient.nfzVariant}`:''}.`};
+    }
+    const nfzMarkerOf=record=>record===currentRecord()&&!equipmentCard.hidden?cardFields.marker.value.trim():record.marker||'';
+    function checkNfzDispatch(record,recipient){
+      const result=expectedNfzMarker(recipient);if(result.error)return result;
+      const previous=nfzMarkerOf(record),expected=result.marker;
+      const alternatives=previous===expected?[]:equipmentRecords.filter(item=>item!==record&&item.type===record.type&&item.status==='AKTYWNY'&&item.locationType?.startsWith('MAGAZYN')&&nfzMarkerOf(item)===expected);
+      return {previous,expected,alternatives};
+    }
+    let nfzChangeSequence=0;
+    function registerNfzChange(record,previous,current,date,reason){
+      if(previous===current)return null;
+      const change={id:`nfz-${++nfzChangeSequence}`,date,previous,current,reason,portalDone:false};
+      (record.nfzChanges||(record.nfzChanges=[])).push(change);
+      return change;
+    }
+    function registerNfzPortal(record,change,done,actor,date=new Date().toISOString()){
+      change.portalDone=done;
+      (record.nfzPortalHistory||(record.nfzPortalHistory=[])).push({changeId:change.id,at:date,actor,action:done?'Potwierdzono wykonanie':'Cofnięto potwierdzenie'});
+    }
+    const sampleNfz=(id,previous,current,date,reason,actor)=>{
+      const record=equipmentRecords.find(item=>item.id===id);if(!record)return;
+      record.marker=current;
+      const change=registerNfzChange(record,previous,current,date,reason);
+      if(change&&actor)registerNfzPortal(record,change,true,actor,`${date}T12:00:00`);
+    };
+    sampleNfz('eq-2','MAZ-DOR.','WIEL-DOR.-III','2026-07-15','Wydanie do pacjenta','Alicja Demo');
+    sampleNfz('eq-3','WIEL-DOR.-III','MAZ-DOR.','2026-08-21','Zmiana województwa',null);
+    sampleNfz('eq-4','MAZ-DZI.','MAŁ-DZI.','2026-09-04','Wydanie do pacjenta','Marek Demo');
+    sampleNfz('eq-17','WIEL-DOR.-IV','','2024-12-31','Likwidacja sprzętu','Alicja Demo');
+    equipmentRecords.find(item=>item.id==='eq-1').marker='MAZ-DOR.';
+    equipmentRecords.find(item=>item.id==='eq-5').marker='WIEL-DOR.-III';
+    equipmentRecords.find(item=>item.id==='eq-demo-1').marker='TLEN-LUB';
+    cardFields.marker.readOnly=true;
+    cardFields.marker.title='Znacznik jest nadawany przez operacje NFZ w prototypie';
+    const nfzTab=document.createElement('button');nfzTab.type='button';nfzTab.className='tab';nfzTab.dataset.tab='nfz';nfzTab.textContent='NFZ';
+    document.querySelector('[data-tab="issue"]').after(nfzTab);
+    const nfzView=document.createElement('section');nfzView.id='nfz';nfzView.className='view';
+    nfzView.innerHTML='<div class="nfz-card-list"><div class="list-toolbar">Historia zmian znacznika NFZ</div><div class="location-table-wrap"><table class="location-table nfz-history-table"><thead><tr><th>Data zmiany</th><th>Poprzedni znacznik</th><th>Obecny znacznik</th><th>Powód</th><th>Data operacji w portalu</th><th>Wykonał</th></tr></thead><tbody id="nfz-changes-body"></tbody></table></div><div class="list-footer"><span class="row-count" id="nfz-card-count">Liczba wierszy: 0</span></div></div>';
+    document.querySelector('.viewbox').appendChild(nfzView);liveTabs.add('nfz');markCardFeatures();
+    function nfzCell(row,value){const cell=row.insertCell();cell.textContent=value??'';return cell;}
+    function renderNfzTab(){
+      const record=currentRecord();if(!record)return;
+      const changes=document.getElementById('nfz-changes-body');changes.replaceChildren();
+      [...(record.nfzChanges||[])].reverse().forEach(change=>{
+        const latest=change.portalDone?[...(record.nfzPortalHistory||[])].reverse().find(item=>item.changeId===change.id&&item.action==='Potwierdzono wykonanie'):null;
+        const row=changes.insertRow();
+        [formatDate(change.date),change.previous||'—',change.current||'—',change.reason,latest?displayFaultDate(latest.at):'—',latest?.actor||'—'].forEach(value=>nfzCell(row,value));
+      });
+      if(!changes.rows.length){const row=changes.insertRow(),cell=nfzCell(row,'Brak zmian znacznika dla tego sprzętu.');cell.colSpan=6;cell.className='nfz-empty';}
+      document.getElementById('nfz-card-count').textContent=`Liczba wierszy: ${(record.nfzChanges||[]).length}`;
+    }
+    nfzTab.addEventListener('click',()=>{
+      document.querySelectorAll('.tab').forEach(tab=>tab.classList.remove('active'));nfzTab.classList.add('active');
+      document.querySelectorAll('.view').forEach(view=>view.classList.remove('active'));nfzView.classList.add('active');
+      renderNfzTab();
+    });
+    function updateDispatchNfzInfo(){
+      const summary=document.getElementById('dispatch-nfz-summary'),wrap=document.getElementById('dispatch-nfz-table-wrap'),body=document.getElementById('dispatch-nfz-table-body');
+      summary.textContent='';body.replaceChildren();wrap.hidden=true;
+      if(dispatchKind.value!=='PACJENT')return;
+      const recipient=selectedRecipient();if(!recipient)return;
+      const result=expectedNfzMarker(recipient);
+      if(result.error){summary.textContent=result.error;return;}
+      const availability=currentRecord()?checkNfzDispatch(currentRecord(),recipient):null;
+      summary.textContent=`NFZ znacznik sprzętu: ${availability?.previous||'(brak)'} · NFZ znacznik pacjenta: ${result.marker}.`;
+      if(availability?.alternatives?.length){
+        summary.textContent+=' Zgodny sprzęt dostępny w magazynie:';
+        availability.alternatives.forEach(item=>{const row=body.insertRow();[item.type,item.model,item.serial,item.locationType,item.marker].forEach(value=>{const cell=row.insertCell();cell.textContent=value||'—';});});
+        wrap.hidden=false;
+      }else if(availability?.previous!==result.marker){summary.textContent+=' Brak zgodnego sprzętu tego typu w magazynie — znacznik zostanie przypisany automatycznie.';}
+    }
+    document.getElementById('dispatch-nfz-no').addEventListener('click',()=>{nfzDispatchConfirmed=false;document.getElementById('dispatch-nfz-confirm').hidden=true;dispatchDialog.close();});
+    document.getElementById('dispatch-nfz-yes').addEventListener('click',()=>{nfzDispatchConfirmed=true;document.getElementById('dispatch-nfz-confirm').hidden=true;dispatchForm.requestSubmit();});
+    const nfzReportScreen=document.createElement('section');nfzReportScreen.id='nfz-report-screen';nfzReportScreen.className='screen';nfzReportScreen.hidden=true;
+    nfzReportScreen.innerHTML='<div class="backbar"><button type="button" id="back-from-nfz">← Wróć do sprzętów</button><span>Raport NFZ — zmiany znaczników</span></div><div class="nfz-panel"><h3>Raport zmian znaczników NFZ</h3><form class="nfz-report-filters" id="nfz-report-form"><label>Data od<input id="nfz-date-from" type="date" required></label><label>Data do<input id="nfz-date-to" type="date" required></label><label>Znacznik<select id="nfz-marker-filter" required><option value="">Wybierz znacznik</option></select></label><button type="submit" class="action">Pokaż raport</button></form><p class="nfz-report-error" id="nfz-report-error" role="alert"></p><div class="nfz-report-results" id="nfz-report-results" hidden><p class="fault-notice">Raport obejmuje zmiany, w których wybrany znacznik był poprzedni lub obecny. Likwidacje widoczne są na końcu.</p><div class="nfz-report-actor"><label for="nfz-report-actor">Osoba wykonująca operację na portalu NFZ:</label><input id="nfz-report-actor" value="Użytkownik demo" required></div><div class="equipment-table-wrap nfz-table-wrap"><table class="equipment-table nfz-report-table"><thead><tr><th>TYP</th><th>MODEL</th><th>nr SN</th><th>Poprzedni znacznik</th><th>Obecny znacznik</th><th>Data zmiany</th><th>Portal NFZ</th></tr></thead><tbody id="nfz-report-body"></tbody></table></div><div class="equipment-list-footer" id="nfz-report-count"></div></div></div>';
+    main.appendChild(nfzReportScreen);
+    const nfzReportButton=document.createElement('button');nfzReportButton.type='button';nfzReportButton.id='open-nfz-report';nfzReportButton.innerHTML='<span class="open-symbol">▤</span>Raport NFZ';document.querySelector('.equipment-actions').appendChild(nfzReportButton);
+    nfzCodes.forEach(code=>document.getElementById('nfz-marker-filter').add(new Option(code,code)));
+    let nfzReportCriteria=null;
+    function renderNfzReport(){
+      if(!nfzReportCriteria)return;
+      const {from,to,marker}=nfzReportCriteria;
+      const entries=equipmentRecords.flatMap(record=>(record.nfzChanges||[]).map(change=>({record,change}))).filter(({change})=>(!from||change.date>=from)&&(!to||change.date<=to)&&(!marker||change.previous===marker||change.current===marker));
+      entries.sort((a,b)=>Number(!a.change.current)-Number(!b.change.current)||a.change.previous.localeCompare(b.change.previous,'pl')||a.change.current.localeCompare(b.change.current,'pl')||a.change.date.localeCompare(b.change.date));
+      const body=document.getElementById('nfz-report-body');body.replaceChildren();entries.forEach(({record,change})=>{
+        const row=body.insertRow();[record.type,record.model,record.serial,change.previous||'',change.current||'',formatDate(change.date)].forEach(value=>nfzCell(row,value));
+        const cell=row.insertCell(),label=document.createElement('label'),checkbox=document.createElement('input'),detail=document.createElement('small');
+        checkbox.type='checkbox';checkbox.checked=change.portalDone;checkbox.setAttribute('aria-label',`Wykonano NFZ dla ${record.serial}, zmiana ${change.date}`);
+        label.append(checkbox,document.createTextNode(' Wykonano'));cell.appendChild(label);
+        const latest=change.portalDone?[...(record.nfzPortalHistory||[])].reverse().find(item=>item.changeId===change.id&&item.action==='Potwierdzono wykonanie'):null;
+        detail.textContent=latest?`${displayFaultDate(latest.at)} · ${latest.actor}`:'Do wykonania';cell.appendChild(detail);
+        checkbox.addEventListener('change',()=>{
+          const actor=document.getElementById('nfz-report-actor');if(!actor.value.trim()){checkbox.checked=change.portalDone;actor.reportValidity();actor.focus();return;}
+          registerNfzPortal(record,change,checkbox.checked,actor.value.trim());renderNfzReport();show(checkbox.checked?'Zapisano wykonanie operacji w portalu NFZ':'Cofnięto oznaczenie operacji NFZ');
+        });
+      });
+      if(!entries.length){const row=body.insertRow(),cell=nfzCell(row,'Brak zmian spełniających kryteria.');cell.colSpan=7;cell.className='nfz-empty';}
+      document.getElementById('nfz-report-count').textContent=`Liczba zmian: ${entries.length}`;
+    }
+    const nfzReportForm=document.getElementById('nfz-report-form');
+    ['nfz-date-from','nfz-date-to','nfz-marker-filter'].forEach(id=>document.getElementById(id).addEventListener('change',()=>{nfzReportCriteria=null;document.getElementById('nfz-report-results').hidden=true;document.getElementById('nfz-report-error').textContent='';}));
+    nfzReportForm.addEventListener('submit',event=>{
+      event.preventDefault();const from=document.getElementById('nfz-date-from').value,to=document.getElementById('nfz-date-to').value,marker=document.getElementById('nfz-marker-filter').value;
+      if(!nfzReportForm.reportValidity())return;
+      if(from>to){document.getElementById('nfz-report-error').textContent='Data końcowa musi być równa dacie początkowej lub późniejsza.';return;}
+      document.getElementById('nfz-report-error').textContent='';nfzReportCriteria={from,to,marker};document.getElementById('nfz-report-results').hidden=false;renderNfzReport();
+    });
+    nfzReportButton.addEventListener('click',()=>{equipmentList.hidden=true;equipmentCard.hidden=true;allFaults.hidden=true;nfzReportScreen.hidden=false;nfzReportCriteria=null;nfzReportForm.reset();document.getElementById('nfz-report-error').textContent='';document.getElementById('nfz-report-results').hidden=true;document.title='Raport NFZ — Symfonia';window.scrollTo(0,0);});
+    document.getElementById('back-from-nfz').addEventListener('click',()=>{nfzReportScreen.hidden=true;equipmentList.hidden=false;document.title='Symfonia — Kartoteka sprzętu';renderEquipmentList();});
+    renderEquipmentList();
   </script>
 </body>
 </html>
