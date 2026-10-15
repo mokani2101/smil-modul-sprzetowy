@@ -180,7 +180,7 @@
             <div class="form-row"><label>Status:</label><select id="status-choice"></select></div><div class="form-row"><label>Typ własności:</label><input></div><div class="form-row"><label>Województwo:</label><input></div><div class="form-row"><label>NFZ znacznik:</label><input></div><div class="form-row"><label>Pochodzenie:</label><input></div><div class="form-row"><label>Stan licznika:</label><input style="max-width:100px"></div>
           </div>
         </div></fieldset>
-        <fieldset class="print-panel"><legend>Wydruk</legend><button class="action" data-action="Druk paszportu">Drukuj paszport</button><button class="action" data-action="Druk dodatkowej strony paszportu">Drukuj dod. str. paszportu</button></fieldset>
+        <fieldset class="print-panel"><legend>Wydruk</legend><button class="action" id="print-passport" type="button">Drukuj paszport</button><button class="action" id="print-passport-attachments" type="button">Drukuj paszport + załączniki</button></fieldset>
       </div>
       <div class="workspace"><section>
         <nav class="tabs" aria-label="Zakładki kartoteki">
@@ -1034,6 +1034,202 @@
     nfzReportButton.addEventListener('click',()=>{equipmentList.hidden=true;equipmentCard.hidden=true;allFaults.hidden=true;nfzReportScreen.hidden=false;nfzReportCriteria=null;nfzReportForm.reset();document.getElementById('nfz-report-error').textContent='';document.getElementById('nfz-report-results').hidden=true;document.title='Raport NFZ — Symfonia';window.scrollTo(0,0);});
     document.getElementById('back-from-nfz').addEventListener('click',()=>{nfzReportScreen.hidden=true;equipmentList.hidden=false;document.title='Symfonia — Kartoteka sprzętu';renderEquipmentList();});
     renderEquipmentList();
+  </script>
+  <style>
+    .passport-panel { min-height:546px; border:1px solid var(--line); background:#fff; display:flex; flex-direction:column; }
+    .passport-panel h3 { margin:0; padding:10px 12px; background:#eef0f2; font-size:14px; }
+    .passport-note { margin:8px 12px; color:#636b77; line-height:1.5; }
+    .passport-settings { display:grid; grid-template-columns:repeat(3,minmax(160px,1fr)); gap:10px; padding:8px 12px 14px; border-bottom:1px solid var(--line); }
+    .passport-settings label { display:flex; flex-direction:column; gap:5px; font-weight:bold; }
+    .passport-settings label:last-child { grid-column:1/-1; }
+    .passport-settings textarea { width:100%; min-height:46px; padding:5px; border:1px solid var(--line); font:12px Arial,Helvetica,sans-serif; resize:vertical; }
+    .passport-warranty-control { display:flex; gap:5px; }
+    .passport-warranty-control button { flex:0 0 64px; height:22px; border:1px solid #aaa; background:#fff; cursor:pointer; }
+    .passport-work-heading { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:10px 12px; }
+    .passport-work-heading h4 { margin:0; font-size:13px; }
+    .passport-work-heading button { min-width:155px; }
+    .passport-work-table-wrap { overflow:auto; flex:1; }
+    .passport-work-table { width:100%; border-collapse:collapse; font-size:12px; }
+    .passport-work-table th { padding:7px; text-align:left; color:#fff; font-weight:normal; background:#707784; border-right:1px solid #ddd; white-space:nowrap; }
+    .passport-work-table td { padding:7px; border-right:1px solid #e2e2e2; border-bottom:1px solid #e2e2e2; }
+    .passport-work-table tbody tr:nth-child(even) { background:#f3f4f6; }
+    .passport-work-table button { min-width:75px; }
+    #passport-work-dialog { width:min(610px,94vw); }
+    #passport-work-dialog form { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    #passport-work-dialog label { display:flex; flex-direction:column; gap:5px; font-weight:bold; }
+    #passport-work-dialog .wide { grid-column:1/-1; }
+    #passport-work-dialog textarea { width:100%; min-height:70px; border:1px solid var(--line); padding:6px; font:12px Arial,Helvetica,sans-serif; resize:vertical; }
+    #passport-work-dialog .dialog-actions { grid-column:1/-1; }
+    #passport-batch-dialog { width:min(440px,94vw); }
+    #passport-batch-dialog .action { min-width:180px; }
+    #passport-preview-dialog { width:min(875px,98vw); max-height:96vh; padding:0; border:1px solid #777; background:#eef0f2; }
+    .passport-preview-bar { position:sticky; top:0; z-index:3; display:flex; align-items:center; gap:9px; padding:8px 12px; background:#e5e8ed; border-bottom:1px solid #bbc0c7; }
+    .passport-preview-bar strong { margin-right:auto; }
+    #passport-preview-pages { padding:14px; overflow:auto; max-height:calc(96vh - 48px); }
+    .passport-sheet { position:relative; width:210mm; min-height:297mm; margin:0 auto 16px; padding:15mm 16mm 18mm; background:#fff; color:#111; box-shadow:0 2px 9px #b3b7bf; font:14pt Arial,Helvetica,sans-serif; }
+    .passport-sheet-header { display:flex; align-items:flex-start; justify-content:space-between; font-size:11pt; font-weight:bold; }
+    .passport-logo-box { width:35mm; height:20mm; display:grid; place-items:center; border:1px solid #111; font:16pt Arial,Helvetica,sans-serif; letter-spacing:1mm; }
+    .passport-company { text-align:right; line-height:1.8; }
+    .passport-barcode-box { width:80mm; margin:11mm 0 8mm; padding:3mm; border:1px solid #111; text-align:center; font:8pt Arial,sans-serif; }
+    .passport-barcode-box svg { display:block; width:100%; height:15mm; }
+    .passport-sheet h1 { margin:8mm 0 10mm; text-align:center; font-size:22pt; }
+    .passport-sheet h2 { margin:0 0 12mm; text-align:center; font-size:18pt; font-weight:normal; }
+    .passport-facts { margin:0 10mm; display:grid; gap:8mm; font-size:13pt; }
+    .passport-fact { display:grid; grid-template-columns:72mm 1fr; align-items:baseline; gap:3mm; }
+    .passport-fact strong { font-size:14pt; overflow-wrap:anywhere; }
+    .passport-service-requirements { margin:8mm 10mm 0; line-height:1.5; }
+    .passport-service-requirements strong { display:block; margin-top:5mm; }
+    .passport-footer { position:absolute; left:20mm; right:20mm; bottom:15mm; text-align:center; font:8pt/1.35 Arial,sans-serif; }
+    .passport-attachment-title { margin:8mm 0 8mm !important; font-size:17pt !important; line-height:1.35; }
+    .passport-attachment-caption { text-align:center; font-size:10pt; margin-bottom:6mm; }
+    .passport-attachment-table { width:100%; border-collapse:collapse; font:11pt/1.4 Arial,sans-serif; }
+    .passport-attachment-table th,.passport-attachment-table td { border:1px solid #222; padding:5mm 3mm; vertical-align:top; }
+    .passport-attachment-table th { text-align:center; font-weight:normal; }
+    .passport-attachment-table th:first-child { width:26mm; }.passport-attachment-table th:last-child { width:38mm; }
+    .passport-attachment-table td { height:32mm; }
+    .passport-demo-label { margin:8mm 0; padding:3mm; background:#fff4df; border:1px solid #e5c78e; font:10pt Arial,sans-serif; text-align:center; }
+    .passport-settings input[readonly],.passport-settings textarea[readonly] { background:#f2f3f5; color:#414750; }
+    #passport-warranty-months[readonly] { cursor:pointer; }
+    .passport-scan-page { display:grid; place-items:center; padding:10mm; }
+    .passport-scan-page img { display:block; max-width:190mm; max-height:277mm; width:auto; height:auto; object-fit:contain; }
+    .passport-scan-caption { position:absolute; bottom:6mm; left:10mm; right:10mm; text-align:center; font:8pt Arial,sans-serif; color:#555; }
+    #passport-print-root { display:none; }
+    @media print {
+      @page { size:A4; margin:0; }
+      body { min-width:0; margin:0; background:#fff; }
+      body > *:not(#passport-print-root) { display:none !important; }
+      #passport-print-root { display:block !important; }
+      .passport-sheet { width:210mm; height:297mm; min-height:0; margin:0; box-shadow:none; break-after:page; page-break-after:always; }
+      .passport-sheet:last-child { break-after:auto; page-break-after:auto; }
+    }
+  </style>
+  <dialog id="passport-work-dialog" class="fault-dialog" aria-labelledby="passport-work-title">
+    <h2 id="passport-work-title">Dodaj kartę pracy serwisu</h2>
+    <form id="passport-work-form">
+      <label>Data czynności *<input name="date" type="date" required></label>
+      <label>Rodzaj *<select name="kind" required><option>Przegląd</option><option>Naprawa</option><option>Kontrola</option></select></label>
+      <label>Nr karty pracy *<input name="number" required></label>
+      <label>Wykonawca *<input name="provider" required></label>
+      <label class="wide">Opis wykonanych czynności *<textarea name="description" required></textarea></label>
+      <label class="wide">Wynik i uwagi *<textarea name="result" required></textarea></label>
+      <label>Następna planowana czynność<input name="nextDate" type="date"></label>
+      <label>Osoba wykonująca *<input name="technician" required></label>
+      <div class="dialog-actions"><button type="button" class="action" id="passport-work-cancel">Anuluj</button><button type="submit" class="action">Dodaj kartę</button></div>
+    </form>
+  </dialog>
+  <dialog id="passport-batch-dialog" class="fault-dialog" aria-labelledby="passport-batch-title">
+    <h2 id="passport-batch-title">Drukowanie paszportów</h2>
+    <p id="passport-batch-count"></p>
+    <p>Wybierz zakres wydruku dla zaznaczonych sprzętów:</p>
+    <div class="dialog-actions"><button type="button" class="action" id="passport-batch-first">Tylko pierwsze strony</button><button type="button" class="action" id="passport-batch-all">Paszporty + załączniki</button><button type="button" class="action" id="passport-batch-cancel">Anuluj</button></div>
+  </dialog>
+  <dialog id="passport-permission-dialog" class="fault-dialog" aria-labelledby="passport-permission-title">
+    <h2 id="passport-permission-title">Zmiana okresu gwarancji</h2>
+    <p>Zmiany okresu gwarancji może dokonać tylko użytkownik ze specjalnymi uprawnieniami. W tym demo pole pozostaje zablokowane.</p>
+    <div class="dialog-actions"><button type="button" class="action" id="passport-permission-close">Rozumiem</button></div>
+  </dialog>
+  <dialog id="passport-preview-dialog" aria-labelledby="passport-preview-title">
+    <div class="passport-preview-bar"><strong id="passport-preview-title">Podgląd paszportu</strong><button type="button" class="action" id="passport-preview-print">Drukuj</button><button type="button" class="action" id="passport-preview-close">Zamknij</button></div>
+    <div id="passport-preview-pages"></div>
+  </dialog>
+  <div id="passport-print-root" aria-hidden="true"></div>
+  <script>
+    // Moduł paszportu technicznego — dane kart pracy i słowników są demonstracyjne.
+    const passportModelRules={
+      'Trilogy Evo':{warrantyMonths:24,reviewMonths:48},
+      'EO-150':{warrantyMonths:24,reviewMonths:12},
+      'BiPAP 40':{warrantyMonths:24,reviewMonths:12},
+      'Trilogy 100':{warrantyMonths:24,reviewMonths:12}
+    };
+    const passportRule=record=>passportModelRules[record.model]||{warrantyMonths:24,reviewMonths:12};
+    const passportPlusMonths=(date,months)=>{if(!date)return '';const value=new Date(`${date}T12:00:00Z`);if(Number.isNaN(value.getTime()))return '';value.setUTCMonth(value.getUTCMonth()+Number(months));return value.toISOString().slice(0,10);};
+    const passportPlusDays=(date,days)=>{if(!date)return '';const value=new Date(`${date}T12:00:00Z`);if(Number.isNaN(value.getTime()))return '';value.setUTCDate(value.getUTCDate()+days);return value.toISOString().slice(0,10);};
+    function passportTech(record){
+      if(record.passportTech){
+        if(record.passportTech.sourceModel!==record.model){const rule=passportRule(record);record.passportTech.sourceModel=record.model;record.passportTech.warrantyMonths=rule.warrantyMonths;record.passportTech.requirements=`Przegląd okresowy co ${rule.reviewMonths} mies. (słownik demonstracyjny dla modelu)`;}
+        return record.passportTech;
+      }
+      const rule=passportRule(record),purchase=record.purchaseDate||'2024-01-15',reviewDate=passportPlusMonths(purchase,6),repairDate=passportPlusMonths(purchase,11);
+      record.passportTech={sourceModel:record.model,startDate:record.installationDate||passportPlusDays(record.purchaseDate,7),warrantyMonths:rule.warrantyMonths,requirements:`Przegląd okresowy co ${rule.reviewMonths} mies. (słownik demonstracyjny dla modelu)`,cards:record.type?[
+        {id:`${record.id}-kp-1`,date:reviewDate,kind:'Przegląd',number:`KP/${reviewDate.slice(0,4)}/${record.id.replace(/\D/g,'').padStart(4,'0')}-1`,provider:'Serwis MedTech Demo',description:'Kontrola stanu technicznego, obudowy, zasilania i akcesoriów. Test funkcjonalny według instrukcji producenta.',result:'Urządzenie sprawne. Zalecono kolejny przegląd okresowy.',nextDate:passportPlusMonths(reviewDate,rule.reviewMonths),technician:'Jan Kowalski (demo)'},
+        {id:`${record.id}-kp-2`,date:repairDate,kind:'Naprawa',number:`KP/${repairDate.slice(0,4)}/${record.id.replace(/\D/g,'').padStart(4,'0')}-2`,provider:'Centrum Napraw Demo',description:'Zgłoszono niestabilną pracę urządzenia. Wymieniono element eksploatacyjny i wykonano testy kontrolne.',result:'Test końcowy pozytywny; sprzęt dopuszczono do użytkowania.',nextDate:passportPlusMonths(repairDate,rule.reviewMonths),technician:'Anna Nowak (demo)'}
+      ]:[]};
+      return record.passportTech;
+    }
+    const passportTab=document.createElement('button');passportTab.type='button';passportTab.className='tab';passportTab.dataset.tab='passport';passportTab.textContent='Paszport techniczny';nfzTab.after(passportTab);
+    const passportView=document.createElement('section');passportView.className='view';passportView.id='passport';
+    passportView.innerHTML='<div class="passport-panel"><h3>Paszport techniczny — VitalAire</h3><p class="passport-note">Dane paszportu pochodzą z karty sprzętu i fikcyjnego słownika modelu. Druga strona paszportu pozostaje pusta. Poniższe karty pracy i ich obrazy załączników są demonstracyjne.</p><div class="passport-settings"><label>Data rozpoczęcia eksploatacji<input id="passport-start-date" type="date" readonly></label><label>Okres gwarancji (mies.)<span class="passport-warranty-control"><input id="passport-warranty-months" type="number" readonly aria-readonly="true" title="Zmiana wymaga specjalnych uprawnień"><button type="button" id="passport-warranty-change">Zmień</button></span></label><label>Data zakończenia gwarancji<input id="passport-warranty-end" readonly></label><label>Wymagania serwisowe urządzenia<textarea id="passport-requirements" readonly></textarea></label></div><div class="passport-work-heading"><h4>Karty pracy serwisu — przeglądy i naprawy</h4><button type="button" class="action" id="passport-add-work">Dodaj kartę pracy</button></div><div class="passport-work-table-wrap"><table class="passport-work-table"><thead><tr><th>Data</th><th>Rodzaj</th><th>Nr karty</th><th>Wykonawca</th><th>Wynik</th><th>Następna czynność</th><th>Załącznik</th></tr></thead><tbody id="passport-work-rows"></tbody></table></div><div class="list-footer"><span class="row-count" id="passport-work-count">Liczba wierszy: 0</span></div></div>';
+    document.querySelector('.viewbox').appendChild(passportView);
+    liveTabs.add('passport');
+    const passportStart=document.getElementById('passport-start-date'),passportWarranty=document.getElementById('passport-warranty-months'),passportRequirements=document.getElementById('passport-requirements');
+    function passportCurrentValue(record,key){const field=cardFields[key];return record===currentRecord()&&!equipmentCard.hidden&&field?(dateFields.has(key)?toIsoDate(field.value):field.value.trim()):record[key]||'';}
+    function renderPassportTab(){
+      const record=currentRecord();if(!record)return;const data=passportTech(record);
+      passportStart.value=passportCurrentValue(record,'installationDate')||data.startDate;passportWarranty.value=data.warrantyMonths;passportRequirements.value=data.requirements;
+      updatePassportWarrantyEnd();
+      const body=document.getElementById('passport-work-rows');body.replaceChildren();
+      [...data.cards].sort((a,b)=>b.date.localeCompare(a.date)).forEach(card=>{
+        const row=body.insertRow();[formatDate(card.date),card.kind,card.number,card.provider,card.result,formatDate(card.nextDate)||'—'].forEach(value=>{const cell=row.insertCell();cell.textContent=value;});
+        const cell=row.insertCell(),button=document.createElement('button');button.type='button';button.className='action';button.textContent='Pokaż skan';button.setAttribute('aria-label',`Pokaż fikcyjny skan karty pracy ${card.number}`);button.addEventListener('click',()=>openPassportPreview([record.id],true,card.id));cell.appendChild(button);
+      });
+      document.getElementById('passport-work-count').textContent=`Liczba wierszy: ${data.cards.length}`;
+    }
+    function updatePassportWarrantyEnd(){const record=currentRecord();if(!record)return;const date=passportPlusMonths(passportCurrentValue(record,'purchaseDate'),Number(passportWarranty.value));document.getElementById('passport-warranty-end').value=date?formatDate(date):'Nie podano daty zakupu';}
+    passportTab.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(tab=>tab.classList.remove('active'));passportTab.classList.add('active');document.querySelectorAll('.view').forEach(view=>view.classList.remove('active'));passportView.classList.add('active');renderPassportTab();});
+    const passportPermissionDialog=document.getElementById('passport-permission-dialog');
+    const explainPassportWarranty=()=>{if(!passportPermissionDialog.open)passportPermissionDialog.showModal();};
+    passportWarranty.addEventListener('click',explainPassportWarranty);
+    passportWarranty.addEventListener('keydown',event=>{if(event.key!=='Tab'){event.preventDefault();explainPassportWarranty();}});
+    document.getElementById('passport-warranty-change').addEventListener('click',explainPassportWarranty);
+    document.getElementById('passport-permission-close').addEventListener('click',()=>passportPermissionDialog.close());
+    const passportWorkDialog=document.getElementById('passport-work-dialog'),passportWorkForm=document.getElementById('passport-work-form');
+    document.getElementById('passport-add-work').addEventListener('click',()=>{const record=currentRecord();if(!record)return;passportWorkForm.reset();passportWorkForm.elements.date.value=new Date().toISOString().slice(0,10);passportWorkForm.elements.number.value=`KP/DEMO/${String(passportTech(record).cards.length+1).padStart(3,'0')}`;passportWorkForm.elements.provider.value='Serwis MedTech Demo';passportWorkDialog.showModal();});
+    document.getElementById('passport-work-cancel').addEventListener('click',()=>passportWorkDialog.close());
+    passportWorkForm.addEventListener('submit',event=>{event.preventDefault();if(!passportWorkForm.reportValidity())return;const record=currentRecord();if(!record)return;const values=new FormData(passportWorkForm),card={id:`${record.id}-kp-${Date.now()}`,date:values.get('date'),kind:values.get('kind'),number:String(values.get('number')).trim(),provider:String(values.get('provider')).trim(),description:String(values.get('description')).trim(),result:String(values.get('result')).trim(),nextDate:values.get('nextDate'),technician:String(values.get('technician')).trim()};passportTech(record).cards.push(card);passportWorkDialog.close();renderPassportTab();show('Dodano kartę pracy do paszportu');});
+    const passportBatchButton=document.createElement('button');passportBatchButton.type='button';passportBatchButton.id='batch-print-passport';passportBatchButton.innerHTML='<span class="open-symbol">▥</span>Drukuj paszporty';document.querySelector('.equipment-actions').appendChild(passportBatchButton);
+    const passportBatchDialog=document.getElementById('passport-batch-dialog'),passportPreviewDialog=document.getElementById('passport-preview-dialog');
+    passportBatchButton.addEventListener('click',()=>{if(!selectedEquipmentIds.size){show('Zaznacz sprzęty na liście do wydruku paszportów');return;}document.getElementById('passport-batch-count').textContent=`Zaznaczono urządzeń: ${selectedEquipmentIds.size}`;passportBatchDialog.showModal();});
+    document.getElementById('passport-batch-cancel').addEventListener('click',()=>passportBatchDialog.close());
+    document.getElementById('passport-batch-first').addEventListener('click',()=>{passportBatchDialog.close();openPassportPreview([...selectedEquipmentIds],false);});
+    document.getElementById('passport-batch-all').addEventListener('click',()=>{passportBatchDialog.close();openPassportPreview([...selectedEquipmentIds],true);});
+    document.getElementById('print-passport').addEventListener('click',()=>{const record=currentRecord();if(record)openPassportPreview([record.id],false);});
+    document.getElementById('print-passport-attachments').addEventListener('click',()=>{const record=currentRecord();if(record)openPassportPreview([record.id],true);});
+    document.getElementById('passport-preview-close').addEventListener('click',()=>passportPreviewDialog.close());
+    document.getElementById('passport-preview-print').addEventListener('click',()=>window.print());
+    const passportEscape=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+    const passportDisplay=value=>passportEscape(value||'Nie podano');
+    const code39Patterns={'0':'nnnwwnwnn','1':'wnnwnnnnw','2':'nnwwnnnnw','3':'wnwwnnnnn','4':'nnnwwnnnw','5':'wnnwwnnnn','6':'nnwwwnnnn','7':'nnnwnnwnw','8':'wnnwnnwnn','9':'nnwwnnwnn','A':'wnnnnwnnw','B':'nnwnnwnnw','C':'wnwnnwnnn','D':'nnnnwwnnw','E':'wnnnwwnnn','F':'nnwnwwnnn','G':'nnnnnwwnw','H':'wnnnnwwnn','I':'nnwnnwwnn','J':'nnnnwwwnn','K':'wnnnnnnww','L':'nnwnnnnww','M':'wnwnnnnwn','N':'nnnnwnnww','O':'wnnnwnnwn','P':'nnwnwnnwn','Q':'nnnnnnwww','R':'wnnnnnwwn','S':'nnwnnnwwn','T':'nnnwnnwwn','U':'wwnnnnnnn','V':'nwwnnnnnn','W':'wwwnnnnnn','X':'nwnnwnnnn','Y':'wwnnwnnnn','Z':'nwwnwnnnn','-':'nwnnnnwnw','.':'wwnnnnwnn',' ':'nwwnnnwnn','$':'nwnwnwnnn','/':'nwnwnnnwn','+':'nwnnnwnwn','%':'nnnwnwnwn','*':'nwnnwnwnn'};
+    function passportBarcode(serial){
+      const value=String(serial||'BRAK NUMERU').toUpperCase().replace(/[^0-9A-Z. $/+%-]/g,'-');let x=8,rects='';
+      for(const letter of `*${value}*`){const pattern=code39Patterns[letter]||code39Patterns['-'];for(let index=0;index<pattern.length;index++){const width=pattern[index]==='w'?3:1;if(index%2===0)rects+=`<rect x="${x}" y="1" width="${width}" height="48" fill="#111"/>`;x+=width;}x+=1;}
+      return `<div class="passport-barcode-box"><svg role="img" aria-label="Kod kreskowy numeru seryjnego ${passportEscape(serial)}" viewBox="0 0 ${x+8} 50" preserveAspectRatio="none">${rects}</svg>Nr seryjny: ${passportDisplay(serial)}</div>`;
+    }
+    const passportFact=(label,value)=>`<div class="passport-fact"><span>${label}:</span><strong>${passportDisplay(value)}</strong></div>`;
+    function passportFirstPage(record){
+      const data=passportTech(record),serial=passportCurrentValue(record,'serial'),purchase=passportCurrentValue(record,'purchaseDate'),warrantyEnd=passportPlusMonths(purchase,data.warrantyMonths);
+      const fields=[['TYP URZĄDZENIA',passportCurrentValue(record,'type')],['MODEL',passportCurrentValue(record,'model')],['PRODUCENT',passportCurrentValue(record,'producer')],['DATA PRODUKCJI',formatDate(passportCurrentValue(record,'productionDate'))],['DATA ZAKUPU',formatDate(purchase)],['DATA ROZPOCZĘCIA EKSPLOATACJI',formatDate(passportCurrentValue(record,'installationDate')||data.startDate)],['OKRES GWARANCJI (LAT/MSC)',`${data.warrantyMonths} mies.`],['DATA ZAKOŃCZENIA GWARANCJI',formatDate(warrantyEnd)]];
+      return `<article class="passport-sheet"><div class="passport-sheet-header"><div class="passport-logo-box">LOGO</div><div class="passport-company">VitalAire Sp. z o.o.<br>P.09-4/7</div></div>${passportBarcode(serial)}<h1>PASZPORT TECHNICZNY NR: ${passportDisplay(passportCurrentValue(record,'passport'))}</h1><h2>KARTA TECHNICZNA URZĄDZENIA</h2><div class="passport-facts">${fields.map(([label,value])=>passportFact(label,value)).join('')}</div><div class="passport-service-requirements">WYMAGANIA SERWISOWE URZĄDZENIA:<strong>${passportDisplay(data.requirements)}</strong></div><div class="passport-footer"><strong>VitalAire Sp. z o.o.</strong><br>Poznań · pl.vitalaire.com · wentylacja@vitalaire.pl<br>Dane demonstracyjne — przed użyciem produkcyjnym zweryfikować stopkę i słowniki modeli.</div></article>`;
+    }
+    function passportBlankSecondPage(record){
+      return `<article class="passport-sheet">${passportBarcode(passportCurrentValue(record,'serial'))}<h1 class="passport-attachment-title">INFORMACJE O PRZEGLĄDACH / NAPRAWACH<br>ORAZ INNYCH CZYNNOŚCIACH DIAGNOSTYCZNO-SERWISOWYCH</h1><div class="passport-attachment-caption">Wpisy w paszporcie albo osobne raporty serwisowe zawierające identyczne dane</div><table class="passport-attachment-table"><thead><tr><th>Data wykonanych czynności</th><th>Opis czynności, wyniki i uwagi oraz następne planowane czynności</th><th>Pieczątka i podpis osoby realizującej czynności</th></tr></thead><tbody>${'<tr><td></td><td></td><td></td></tr>'.repeat(5)}</tbody></table></article>`;
+    }
+    function passportScanLines(value,x,y,limit=63){
+      const words=String(value||'—').split(/\s+/),lines=[''];
+      words.forEach(word=>{const index=lines.length-1;if(lines[index]&&`${lines[index]} ${word}`.length>limit)lines.push(word);else lines[index]+=`${lines[index]?' ':''}${word}`;});
+      return lines.slice(0,4).map((line,index)=>`<text x="${x}" y="${y+index*17}" class="scan-value">${passportEscape(line)}</text>`).join('');
+    }
+    function passportScanPage(record,card){
+      const serial=passportCurrentValue(record,'serial'),model=passportCurrentValue(record,'model'),date=formatDate(card.date);
+      const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="720" height="930" viewBox="0 0 720 930"><style>text{font-family:Arial,Helvetica,sans-serif;fill:#242424}.blue{fill:#1987bf}.label{font-size:12px;font-weight:bold}.scan-value{font-size:12px}.section{font-size:15px;fill:#1687c4}.rule{stroke:#555;stroke-width:1.5}</style><rect width="720" height="930" fill="#fdfdfd"/><text x="45" y="65" class="blue" font-size="27" font-weight="bold">Repair Report</text><text x="45" y="91" fill="#b32b2b" font-size="16">Ref No. ${passportEscape(card.number)}</text><rect x="475" y="35" width="195" height="72" fill="#f1f2f3" stroke="#111"/><text x="506" y="81" font-size="20" font-weight="bold">SERWIS DEMO</text><text x="48" y="127" class="scan-value">VitalAire · dane fikcyjne do demonstracji</text><text x="48" y="147" class="scan-value">Poznań, Polska</text><line x1="45" y1="180" x2="674" y2="180" class="rule"/><text x="47" y="205" class="label">Date</text><text x="140" y="205" class="scan-value">${passportEscape(date)}</text><line x1="45" y1="225" x2="674" y2="225" class="rule"/><text x="47" y="252" class="section">Account Information</text><text x="47" y="280" class="label">Name</text><text x="140" y="280" class="scan-value">VitalAire (demo)</text><text x="373" y="280" class="label">Contact</text><text x="478" y="280" class="scan-value">Osoba przykładowa</text><text x="47" y="308" class="label">Phone</text><text x="140" y="308" class="scan-value">000 000 000</text><line x1="45" y1="330" x2="674" y2="330" class="rule"/><text x="47" y="357" class="section">Product Information</text><text x="47" y="385" class="label">Category</text><text x="140" y="385" class="scan-value">${passportEscape(passportCurrentValue(record,'type'))}</text><text x="373" y="385" class="label">Serial Number</text><text x="478" y="385" class="scan-value">${passportEscape(serial)}</text><text x="47" y="413" class="label">Model</text><text x="140" y="413" class="scan-value">${passportEscape(model)}</text><text x="373" y="413" class="label">Warranty Status</text><text x="478" y="413" class="scan-value">Dane demonstracyjne</text><line x1="45" y1="440" x2="674" y2="440" class="rule"/><text x="47" y="467" class="section">Problem Summary</text><text x="47" y="495" class="label">Problem Summary</text><text x="185" y="495" class="scan-value">${passportEscape(card.kind)}</text><text x="373" y="495" class="label">Description</text>${passportScanLines(card.description,478,495,27)}<line x1="45" y1="575" x2="674" y2="575" class="rule"/><text x="47" y="602" class="section">Repair Details</text><text x="47" y="630" class="label">Received Date</text><text x="185" y="630" class="scan-value">${passportEscape(date)}</text><text x="373" y="630" class="label">Date Repaired</text><text x="478" y="630" class="scan-value">${passportEscape(date)}</text><text x="47" y="660" class="label">Customer Report</text>${passportScanLines(card.result,185,660,62)}<text x="47" y="752" class="label">Performed by</text><text x="185" y="752" class="scan-value">${passportEscape(card.technician)}</text><text x="47" y="783" class="label">Next action</text><text x="185" y="783" class="scan-value">${passportDisplay(formatDate(card.nextDate))}</text><line x1="45" y1="810" x2="674" y2="810" class="rule"/><text x="47" y="852" font-size="11" fill="#666">FIKCYJNY SKAN KARTY PRACY — WYŁĄCZNIE DEMO</text><text x="47" y="889" font-size="9" fill="#777">Wzór układu inspirowany przykładowym raportem serwisowym. Dane nie są dokumentacją rzeczywistego urządzenia.</text></svg>`;
+      const source=`data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+      return `<article class="passport-sheet passport-scan-page"><img src="${source}" alt="Fikcyjny skan karty pracy ${passportEscape(card.number)}"><div class="passport-scan-caption">Załącznik: ${passportEscape(card.number)} · ${passportEscape(card.provider)}</div></article>`;
+    }
+    function openPassportPreview(ids,includeAttachments,onlyCardId=null){
+      const records=ids.map(id=>equipmentRecords.find(record=>record.id===id)).filter(Boolean);if(!records.length){show('Brak sprzętu do wydruku');return;}
+      const pages=records.flatMap(record=>{const cards=passportTech(record).cards.filter(card=>!onlyCardId||card.id===onlyCardId).sort((a,b)=>a.date.localeCompare(b.date));if(onlyCardId)return cards.map(card=>passportScanPage(record,card));const first=[passportFirstPage(record)];return includeAttachments?first.concat(passportBlankSecondPage(record),cards.map(card=>passportScanPage(record,card))):first;});
+      document.getElementById('passport-preview-title').textContent=`Podgląd wydruku — ${records.length} ${records.length===1?'sprzęt':'sprzętów'}, ${pages.length} ${pages.length===1?'strona':'strony'}`;
+      document.getElementById('passport-preview-pages').innerHTML=pages.join('');document.getElementById('passport-print-root').innerHTML=pages.join('');passportPreviewDialog.showModal();
+    }
   </script>
 </body>
 </html>
