@@ -19,7 +19,14 @@
     fieldset { min-width:0; margin:0; padding:12px 12px 10px; border:1px solid var(--line); }
     legend { padding:0 3px; font-weight:bold; }
     .record-head { display:grid; grid-template-columns:1fr 245px; gap:5px; min-height:242px; }
-    .basic { display:grid; grid-template-columns:270px 260px 270px; align-content:start; gap:8px 40px; padding:14px 15px 15px; }
+    .basic { display:grid; grid-template-columns:270px 260px 270px 270px; align-content:start; gap:8px 40px; padding:14px 15px 15px; }
+    .ecare-basic { align-self:start; min-width:0; width:100%; }
+    .ecare-basic h3 { margin:0 0 8px; font-size:12px; }
+    .ecare-basic .form-row { grid-template-columns:92px minmax(0,1fr); gap:8px; }
+    .ecare-status { display:inline-block; width:max-content; min-width:86px; padding:4px 8px; border-radius:3px; font-weight:bold; text-align:center; }
+    .ecare-status.is-sent { color:#176027; background:#e2f4e4; border:1px solid #75b680; }
+    .ecare-status.is-waiting { color:#a11e1e; background:#ffe9e9; border:1px solid #dc8989; }
+    .ecare-datetime { display:block; min-height:22px; padding:4px 5px; background:#f4f5f6; border:1px solid #c5c9cf; white-space:nowrap; }
     .form-row { display:grid; grid-template-columns:92px minmax(0, 1fr); align-items:center; gap:8px; min-height:24px; }
     .form-row label { font-weight:bold; text-align:right; white-space:nowrap; }
     input, select { height:22px; width:100%; border:1px solid #b8b8b8; background:#fff; padding:2px 5px; color:#292929; }
@@ -48,7 +55,7 @@
     .counter-grid { display:grid; grid-template-columns:35% 1fr; gap:5px; min-height:546px; }
     .history { min-height:546px; display:flex; flex-direction:column; padding:0; overflow:hidden; }
     .history legend { margin-left:10px; }
-    .table-head { display:grid; grid-template-columns:90px 90px 1fr; height:25px; margin:1px 4px 0; color:white; background:#727986; }
+    .table-head { display:grid; grid-template-columns:90px 90px 1fr 90px; height:25px; margin:1px 4px 0; color:white; background:#727986; }
     .table-head span { padding:6px 8px; border-right:1px solid #ddd; }
     .empty-table { flex:1; margin:0 4px 4px; border:1px solid #ddd; border-top:0; background:linear-gradient(#fff,#fcfcfc); }
     .table-footer { width:198px; margin:0 auto 4px; padding:4px 8px; border:1px solid var(--line); }
@@ -88,6 +95,25 @@
     .service-table input[type="checkbox"] { display:block; width:15px; height:15px; margin:4px auto; accent-color:#2a67b6; }
     .service-total { min-width:100px; padding:4px 6px; border:1px solid var(--line); text-align:right; }
     .service-table input[type="number"] { text-align:right; }
+    .activity-list { height:100%; display:flex; flex-direction:column; padding:10px; }
+    .activity-form { display:flex; flex-wrap:wrap; align-items:end; gap:12px; padding:12px; border:1px solid var(--line); background:#f6f7f9; }
+    .activity-form label { display:flex; flex-direction:column; gap:5px; font-weight:bold; }
+    .activity-form select { min-width:330px; }
+    .activity-form select, .activity-form input { height:27px; border:1px solid #b6bac1; background:white; padding:3px 6px; }
+    .activity-form .action { height:27px; }
+    .activity-error { min-height:19px; margin:5px 1px; color:#a51f1f; }
+    .activity-table th:first-child, .activity-table td:first-child { width:110px; }
+    .activity-table th:nth-child(2) { width:auto; }
+    .activity-table th:nth-child(3) { width:120px; }
+    .activity-table td { padding:6px 8px; }
+    #activity-batch-dialog { width:min(680px,96vw); max-height:90vh; overflow:auto; border:1px solid #9399a3; padding:18px; }
+    #activity-batch-dialog h3 { margin:0 0 12px; }
+    #activity-batch-dialog .activity-form { margin-top:14px; }
+    #activity-batch-dialog .activity-form select { min-width:min(330px,75vw); }
+    .activity-batch-table { width:100%; border-collapse:collapse; }
+    .activity-batch-table th { text-align:left; color:#fff; background:#707784; padding:6px; font-weight:normal; }
+    .activity-batch-table td { padding:6px; border-bottom:1px solid #ddd; }
+    .activity-batch-actions { display:flex; gap:8px; align-items:end; }
     .screen[hidden] { display:none !important; }
     .main.list-mode { padding:4px 6px 28px 0; }
     .equipment-browser { display:grid; grid-template-columns:150px minmax(0,1fr); min-height:calc(100vh - 62px); }
@@ -104,7 +130,7 @@
     .equipment-actions .open-symbol { display:block; color:#686f79; font-size:18px; line-height:23px; }
     .equipment-search { width:100%; height:24px; margin-bottom:2px; font-style:italic; }
     .equipment-table-wrap { height:calc(100vh - 177px); min-height:520px; overflow:auto; border:1px solid #b7b7b7; background:#fff; }
-    .equipment-table { border-collapse:collapse; table-layout:fixed; width:1650px; font-size:10px; }
+    .equipment-table { border-collapse:collapse; table-layout:fixed; width:1800px; font-size:10px; }
     .equipment-table th { position:sticky; top:0; z-index:1; height:20px; padding:2px 4px; border-right:1px solid #d4d6d9; text-align:left; color:#fff; background:#6d7480; white-space:nowrap; }
     .equipment-table td { height:19px; padding:2px 4px; border-right:1px solid #e3e4e6; border-bottom:1px solid #ececee; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     .equipment-table tbody tr:nth-child(even) { background:#f3f4f6; }
@@ -121,7 +147,7 @@
     .footer-actions { position:absolute; right:16px; bottom:12px; display:flex; gap:10px; } .footer-actions .action { width:80px; }
     .status { position:fixed; right:20px; bottom:16px; z-index:10; max-width:310px; padding:9px 13px; color:white; background:#333d4a; border-radius:3px; box-shadow:0 2px 8px #5558; opacity:0; transform:translateY(12px); transition:.2s; pointer-events:none; }
     .status.show { opacity:1; transform:translateY(0); }
-    @media (max-width:1300px) { .basic { gap:8px 20px; grid-template-columns:250px 240px 250px; } .tabs .tab { padding:0 8px; } }
+    @media (max-width:1500px) { .basic { gap:8px 15px; grid-template-columns:minmax(185px,1fr) minmax(175px,.9fr) minmax(185px,1fr) 220px; } .tabs .tab { padding:0 8px; } }
     .fault-toolbar { display:flex; align-items:center; gap:12px; padding:12px; background:#eef0f2; }
     .fault-toolbar input { margin-left:auto; max-width:340px; }
     .fault-toolbar button { padding:0 14px; flex-shrink:0; }
@@ -153,6 +179,7 @@
     .fault-date { margin:0; color:#62676e; }
     .fault-empty { text-align:center; padding:30px !important; color:#707784; }
     .equipment-table th:nth-child(2) { width:165px; }
+    .equipment-table th:nth-child(19) { width:145px; }
     button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline:2px solid var(--blue); outline-offset:2px; }
   </style>
 </head>
@@ -166,7 +193,7 @@
     <main class="main list-mode">
       <section class="screen equipment-browser" id="equipment-list-screen" aria-label="Lista sprzętu medycznego">
         <aside class="filters-panel"><div class="filters-heading">Filtry</div><input id="filter-search" type="search" placeholder="Szukaj" aria-label="Filtruj sprzęt"></aside>
-        <div class="equipment-content"><div class="equipment-title">Sprzęt medyczny</div><div class="equipment-actions"><button id="new-equipment" type="button"><span class="add-symbol">+</span>Dodaj</button><button id="open-equipment" type="button"><span class="open-symbol">▣</span>Otwórz</button></div><input class="equipment-search" id="equipment-search" type="search" placeholder="Szukaj" aria-label="Szukaj sprzętu"><div class="equipment-table-wrap"><table class="equipment-table"><thead><tr><th class="select-col"></th><th>Typ</th><th>Model</th><th>Producent</th><th>Nr seryjny</th><th>Nr paszportu</th><th>Status</th><th>Typ własności</th><th>Data produkcji</th><th>Data zakupu</th><th>Wartość zakupu</th><th>Data instalacji</th><th>Data likwidacji</th><th>Następny przegląd</th><th>NFZ znacznik</th><th>Typ lokalizacji</th><th>Akt. lokalizacja</th><th>Pochodzenie</th></tr></thead><tbody id="equipment-rows"></tbody></table></div><div class="equipment-list-footer"><span id="equipment-count"></span><span>Dane przykładowe prototypu</span></div></div>
+        <div class="equipment-content"><div class="equipment-title">Sprzęt medyczny</div><div class="equipment-actions"><button id="new-equipment" type="button"><span class="add-symbol">+</span>Dodaj</button><button id="open-equipment" type="button"><span class="open-symbol">▣</span>Otwórz</button></div><input class="equipment-search" id="equipment-search" type="search" placeholder="Szukaj" aria-label="Szukaj sprzętu"><div class="equipment-table-wrap"><table class="equipment-table"><thead><tr><th class="select-col"></th><th>Typ</th><th>Model</th><th>Producent</th><th>Nr seryjny</th><th>Nr paszportu</th><th>Status</th><th>Typ własności</th><th>Data produkcji</th><th>Data zakupu</th><th>Wartość zakupu</th><th>Data instalacji</th><th>Data likwidacji</th><th>Następny przegląd</th><th>NFZ znacznik</th><th>Typ lokalizacji</th><th>Akt. lokalizacja</th><th>Pochodzenie</th><th>Data wysłania eOpieka</th></tr></thead><tbody id="equipment-rows"></tbody></table></div><div class="equipment-list-footer"><span id="equipment-count"></span><span>Dane przykładowe prototypu</span></div></div>
       </section>
       <section class="screen" id="equipment-card-screen" aria-label="Karta sprzętu" hidden>
       <div class="backbar"><button id="back-to-list" type="button">← Wróć do listy</button><span id="card-heading"></span></div>
@@ -179,6 +206,7 @@
           </div><div class="stack">
             <div class="form-row"><label>Status:</label><select id="status-choice"></select></div><div class="form-row"><label>Typ własności:</label><input></div><div class="form-row"><label>Województwo:</label><input></div><div class="form-row"><label>NFZ znacznik:</label><input></div><div class="form-row"><label>Pochodzenie:</label><input></div><div class="form-row"><label>Stan licznika:</label><input style="max-width:100px"></div>
           </div>
+          <div class="ecare-basic"><h3>eOpieka</h3><div class="stack"><div class="form-row"><label>Status:</label><span class="ecare-status" id="ecare-status"></span></div><div class="form-row"><label>Data wysłania:</label><output class="ecare-datetime" id="ecare-sent-at"></output></div></div></div>
         </div></fieldset>
         <fieldset class="print-panel"><legend>Wydruk</legend><button class="action" id="print-passport" type="button">Drukuj paszport</button><button class="action" id="print-passport-attachments" type="button">Drukuj paszport + załączniki</button></fieldset>
       </div>
@@ -200,9 +228,10 @@
           </section>
           <section class="view" id="extra"><div class="extra-view"><fieldset><legend>Informacje dodatkowe</legend><div class="stack"><div class="form-row"><label>Kolor:</label><input></div><div class="form-row"><label>Rozmiar:</label><input></div></div></fieldset></div></section>
           <section class="view" id="purchase"><div class="purchase"><fieldset><legend>Informacje dot. zakupu</legend><div class="stack"><div class="form-row"><label>Data zakupu:</label><div class="date-input"><input placeholder="Select a date"><button class="calendar" type="button">15</button></div></div><div class="form-row"><label>Wartość zakupu:</label><input></div><div class="form-row"><label>Nr faktury:</label><input></div></div></fieldset></div></section>
-          <section class="view" id="counter"><div class="counter-grid"><fieldset class="history"><legend>Historia spisu licznika</legend><div class="table-head"><span>Data</span><span>Wartość</span><span>Typ operacji</span></div><div class="empty-table"></div><div class="table-footer">Liczba wierszy: 0</div></fieldset><div class="counter-right"><fieldset><legend>Dane do kalkulacji następnego przeglądu</legend><div class="stack"><div class="form-row"><label>Poprzedni odczyt:</label><div class="date-input"><input placeholder="Select a date"><button class="calendar" type="button">15</button></div><input class="aux"></div><div class="form-row"><label>Ostatni odczyt:</label><div class="date-input"><input placeholder="Select a date"><button class="calendar" type="button">15</button></div><input class="aux"></div><div class="form-row"><label>Różnica:</label><input><input class="aux"></div><div class="form-row"><label>Śr. dob. czas went:</label><input></div></div></fieldset><fieldset class="next-review"><legend>Następny przegląd</legend><div class="stack"><div class="form-row"><label>Ostatni przegląd:</label><div class="date-input"><input placeholder="Select a date"><button class="calendar" type="button">15</button></div></div><div class="form-row"><label>Następny przegląd (czas):</label><div class="date-input"><input placeholder="Select a date"><button class="calendar" type="button">15</button></div></div><div class="form-row"><label>Następny przegląd (licznik):</label><div class="date-input"><input placeholder="Select a date"><button class="calendar" type="button">15</button></div></div></div></fieldset><div class="counter-entry"><button id="enter-counter" type="button">Wprowadź wartość licznika</button></div></div></div></section>
-          <section class="view" id="changes"><fieldset class="location-list"><legend>Zmiany lokalizacji</legend><div class="list-toolbar"><input id="location-search" placeholder="Szukaj"></div><div class="location-table-wrap"><table class="location-table"><thead><tr><th></th><th>Data</th><th>Typ lokalizacji</th><th>Lokalizacja</th><th>Jednostka org.</th><th>Pomieszczenie</th><th>Właściciel</th><th>Opis</th></tr></thead><tbody id="location-rows"><tr><td class="row-marker">›</td><td><input type="date"></td><td><input></td><td><select class="location-choice"></select></td><td><input></td><td><input></td><td><input></td><td><input></td></tr><tr><td class="row-marker">›</td><td><input type="date"></td><td><input></td><td><select class="location-choice"></select></td><td><input></td><td><input></td><td><input></td><td><input></td></tr><tr><td class="row-marker">›</td><td><input type="date"></td><td><input></td><td><select class="location-choice"></select></td><td><input></td><td><input></td><td><input></td><td><input></td></tr><tr><td class="row-marker">›</td><td><input type="date"></td><td><input></td><td><select class="location-choice"></select></td><td><input></td><td><input></td><td><input></td><td><input></td></tr></tbody></table></div><div class="list-footer"><span class="row-count" id="row-count">Liczba wierszy: 4</span><button class="add-row" id="add-location-row" type="button">Dodaj pozycję</button></div></fieldset></section>
-          <section class="view" id="service"><div class="service-list"><div class="list-toolbar"><input id="service-search" type="search" placeholder="Szukaj" aria-label="Szukaj wierszy serwisowych"></div><div class="location-table-wrap"><table class="location-table service-table"><thead><tr><th></th><th>Data od</th><th>Data do</th><th>Data</th><th>Nr zlecenia</th><th>Typ serwisu</th><th>Kontrahent</th><th>Licznik</th><th>Koszt</th><th>Zakończono</th><th>Zakres serwisu</th></tr></thead><tbody id="service-rows"></tbody></table></div><div class="list-footer"><span class="row-count" id="service-row-count">Liczba wierszy: 0</span><output class="service-total" id="service-total" aria-label="Łączny koszt serwisu">0,00 zł</output><button class="add-row" id="add-service-row" type="button">Dodaj pozycję</button></div></div></section>
+          <section class="view" id="counter"><div class="counter-grid"><fieldset class="history"><legend>Historia spisu licznika</legend><div class="table-head"><span>Data</span><span>Wartość</span><span>Typ operacji</span><span>Użytkownik</span></div><div class="empty-table"></div><div class="table-footer">Liczba wierszy: 0</div></fieldset><div class="counter-right"><fieldset><legend>Dane do kalkulacji następnego przeglądu</legend><div class="stack"><div class="form-row"><label>Poprzedni odczyt:</label><div class="date-input"><input placeholder="Select a date"><button class="calendar" type="button">15</button></div><input class="aux"></div><div class="form-row"><label>Ostatni odczyt:</label><div class="date-input"><input placeholder="Select a date"><button class="calendar" type="button">15</button></div><input class="aux"></div><div class="form-row"><label>Różnica:</label><input><input class="aux"></div><div class="form-row"><label>Śr. dob. czas went:</label><input></div></div></fieldset><fieldset class="next-review"><legend>Następny przegląd</legend><div class="stack"><div class="form-row"><label>Ostatni przegląd:</label><div class="date-input"><input placeholder="Select a date"><button class="calendar" type="button">15</button></div></div><div class="form-row"><label>Następny przegląd (czas):</label><div class="date-input"><input placeholder="Select a date"><button class="calendar" type="button">15</button></div></div><div class="form-row"><label>Następny przegląd (licznik):</label><div class="date-input"><input placeholder="Select a date"><button class="calendar" type="button">15</button></div></div></div></fieldset><div class="counter-entry"><button id="enter-counter" type="button">Wprowadź wartość licznika</button></div></div></div></section>
+          <section class="view" id="changes"><fieldset class="location-list"><legend>Zmiany lokalizacji</legend><div class="list-toolbar"><input id="location-search" placeholder="Szukaj"></div><div class="location-table-wrap"><table class="location-table"><thead><tr><th></th><th>Data</th><th>Typ lokalizacji</th><th>Lokalizacja</th><th>Jednostka org.</th><th>Pomieszczenie</th><th>Właściciel</th><th>Opis</th><th>Użytkownik</th></tr></thead><tbody id="location-rows"><tr><td class="row-marker">›</td><td><input type="date"></td><td><input></td><td><select class="location-choice"></select></td><td><input></td><td><input></td><td><input></td><td><input></td><td><input aria-label="Użytkownik" value="Admin" readonly></td></tr><tr><td class="row-marker">›</td><td><input type="date"></td><td><input></td><td><select class="location-choice"></select></td><td><input></td><td><input></td><td><input></td><td><input></td><td><input aria-label="Użytkownik" value="MK" readonly></td></tr><tr><td class="row-marker">›</td><td><input type="date"></td><td><input></td><td><select class="location-choice"></select></td><td><input></td><td><input></td><td><input></td><td><input></td><td><input aria-label="Użytkownik" value="AN" readonly></td></tr><tr><td class="row-marker">›</td><td><input type="date"></td><td><input></td><td><select class="location-choice"></select></td><td><input></td><td><input></td><td><input></td><td><input></td><td><input aria-label="Użytkownik" value="JP" readonly></td></tr></tbody></table></div><div class="list-footer"><span class="row-count" id="row-count">Liczba wierszy: 4</span><button class="add-row" id="add-location-row" type="button">Dodaj pozycję</button></div></fieldset></section>
+          <section class="view" id="service"><div class="service-list"><div class="list-toolbar"><input id="service-search" type="search" placeholder="Szukaj" aria-label="Szukaj wierszy serwisowych"></div><div class="location-table-wrap"><table class="location-table service-table"><thead><tr><th></th><th>Data od</th><th>Data do</th><th>Data</th><th>Nr zlecenia</th><th>Typ serwisu</th><th>Kontrahent</th><th>Licznik</th><th>Koszt</th><th>Zakończono</th><th>Zakres serwisu</th><th>Użytkownik</th></tr></thead><tbody id="service-rows"></tbody></table></div><div class="list-footer"><span class="row-count" id="service-row-count">Liczba wierszy: 0</span><output class="service-total" id="service-total" aria-label="Łączny koszt serwisu">0,00 zł</output><button class="add-row" id="add-service-row" type="button">Dodaj pozycję</button></div></div></section>
+          <section class="view" id="activities"><div class="activity-list"><form class="activity-form" id="activity-form"><label>Data wykonania<input id="activity-date" type="date" required></label><label>Czynność dla modelu<select id="activity-name" required></select></label><button class="action" type="submit">Dodaj czynność</button></form><p class="activity-error" id="activity-error" role="alert"></p><div class="location-table-wrap"><table class="location-table activity-table"><thead><tr><th>Data</th><th>Nazwa czynności</th><th>Użytkownik</th></tr></thead><tbody id="activity-rows"></tbody></table></div><div class="list-footer"><span class="row-count" id="activity-count">Liczba wierszy: 0</span></div></div></section>
           <section class="view" id="placeholder"><div style="padding:18px;color:#666">Ta zakładka jest dostępna w widoku prototypu.</div></section>
         </div>
       </section><fieldset class="operations"><legend>Operacje</legend><button class="action" data-action="Zmiana lokalizacji">Zmiana lokalizacji</button><button class="action" data-action="Wydanie do pacjenta">Wydanie do pacjenta</button><button class="action" data-action="Wydanie do serwisu">Wydanie do serwisu</button><button class="action" data-action="Zmiana magazynu">Zmiana magazynu</button><button class="action" data-action="Zmywalnia">Zmywalnia</button><button class="action" data-action="Przyjęcie na magazyn / lokalizację">Przyjęcie na magazyn / lokalizację</button></fieldset>
@@ -228,7 +257,7 @@
     const rows = document.getElementById('location-rows'), rowCount = document.getElementById('row-count');
     const updateRowCount = () => rowCount.textContent = `Liczba wierszy: ${rows.querySelectorAll('tr').length}`;
     const addLocationRow=() => {
-      const row=document.createElement('tr'); row.innerHTML='<td class="row-marker">›</td><td><input type="date"></td><td><input></td><td><select class="location-choice"></select></td><td><input></td><td><input></td><td><input></td><td><input></td>';
+      const row=document.createElement('tr'); row.innerHTML='<td class="row-marker">›</td><td><input type="date"></td><td><input></td><td><select class="location-choice"></select></td><td><input></td><td><input></td><td><input></td><td><input></td><td><input aria-label="Użytkownik" value="Admin" readonly></td>';
       rows.appendChild(row); fillLocationChoices(row); updateRowCount(); return row;
     };
     document.getElementById('add-location-row').addEventListener('click', () => { addLocationRow().querySelector('input').focus(); show('Dodano nową pozycję lokalizacji'); });
@@ -245,7 +274,7 @@
     };
     const addServiceRow=() => {
       const row=document.createElement('tr');
-      row.innerHTML='<td class="row-marker">›</td><td><input type="date" aria-label="Data od"></td><td><input type="date" aria-label="Data do"></td><td><input type="date" aria-label="Data"></td><td><input aria-label="Nr zlecenia"></td><td><input aria-label="Typ serwisu"></td><td><input aria-label="Kontrahent"></td><td><input type="number" min="0" step="1" aria-label="Licznik"></td><td><input class="service-cost" type="number" min="0" step="0.01" aria-label="Koszt w złotych"></td><td><input type="checkbox" aria-label="Zakończono"></td><td><input aria-label="Zakres serwisu"></td>';
+      row.innerHTML='<td class="row-marker">›</td><td><input type="date" aria-label="Data od"></td><td><input type="date" aria-label="Data do"></td><td><input type="date" aria-label="Data"></td><td><input aria-label="Nr zlecenia"></td><td><input aria-label="Typ serwisu"></td><td><input aria-label="Kontrahent"></td><td><input type="number" min="0" step="1" aria-label="Licznik"></td><td><input class="service-cost" type="number" min="0" step="0.01" aria-label="Koszt w złotych"></td><td><input type="checkbox" aria-label="Zakończono"></td><td><input aria-label="Zakres serwisu"></td><td><input aria-label="Użytkownik" value="Admin" readonly></td>';
       serviceRows.appendChild(row); updateServiceSummary(); return row;
     };
     for(let i=0;i<4;i++) addServiceRow();
@@ -263,7 +292,8 @@
       {model:'EO-150', producer:'EOVE', count:3, price:1822.73, produced:'2020-06-12', bought:'2020-06-12'},
       {model:'Trilogy Evo', producer:'Philips Respironics', count:6, price:17309.10, produced:'2019-12-31', bought:'2020-03-27'},
       {model:'BiPAP 40', producer:'Philips Respironics', count:18, price:10224.37, produced:'2020-04-30', bought:'2020-04-30'},
-      {model:'Trilogy 100', producer:'Philips Respironics', count:7, price:14235.02, produced:'2020-06-25', bought:'2020-06-25'}
+      {model:'Trilogy 100', producer:'Philips Respironics', count:7, price:14235.02, produced:'2020-06-25', bought:'2020-06-25'},
+      {model:'Astral 150', producer:'ResMed (demo)', count:1, price:0, produced:'2025-06-12', bought:'2025-07-01'}
     ];
     sampleGroups.forEach((group,groupIndex)=>{
       for(let index=0;index<group.count;index++){
@@ -279,6 +309,21 @@
     const main=document.querySelector('.main');
     const formatNumber=new Intl.NumberFormat('pl-PL',{minimumFractionDigits:2,maximumFractionDigits:2});
     const formatDate=value=>{ if(!value) return ''; const parts=value.split('-'); return parts.length===3&&parts[0].length===4?`${parts[2]}-${parts[1]}-${parts[0]}`:value; };
+    const eCareDateTime=new Intl.DateTimeFormat('pl-PL',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
+    const formatECareAt=value=>value?eCareDateTime.format(new Date(value)):'';
+    function seedECare(record){
+      if(record.eCare)return record.eCare;
+      const timestamp=new Date();timestamp.setDate(timestamp.getDate()-1-Math.floor(Math.random()*90));
+      timestamp.setHours(7+Math.floor(Math.random()*12),Math.floor(Math.random()*60),0,0);
+      const status=Math.random()<0.55?'WYSŁANE':'OCZEKUJE';
+      record.eCare={status,sentAt:status==='WYSŁANE'?timestamp.toISOString():null};
+      return record.eCare;
+    }
+    function renderECare(record){
+      const data=seedECare(record),status=document.getElementById('ecare-status');
+      status.textContent=data.status;status.classList.toggle('is-sent',data.status==='WYSŁANE');status.classList.toggle('is-waiting',data.status==='OCZEKUJE');
+      document.getElementById('ecare-sent-at').textContent=formatECareAt(data.sentAt);
+    }
     const toIsoDate=value=>{ if(!value) return ''; const parts=value.trim().split(/[.\-/]/); return parts.length===3&&parts[0].length===4?`${parts[0]}-${parts[1]}-${parts[2]}`:parts.length===3&&parts[2].length===4?`${parts[2]}-${parts[1]}-${parts[0]}`:value; };
     const fieldIn=(scope,label)=>[...scope.querySelectorAll('.form-row')].find(row=>row.querySelector('label')?.textContent.trim()===label)?.querySelector('input, select');
     const basicScope=document.querySelector('#equipment-card-screen .record-head');
@@ -307,8 +352,9 @@
       equipmentBody.replaceChildren(); const visible=visibleRecords();
       visible.forEach(record=>{
         const row=document.createElement('tr'); row.tabIndex=0; row.setAttribute('role','button'); row.dataset.id=record.id; row.setAttribute('aria-label',`Otwórz kartę: ${record.type} ${record.model}, ${record.serial}`); if(record.id===selectedRecordId) row.classList.add('selected');
+        const eCare=seedECare(record);
         const checkCell=document.createElement('td'); checkCell.className='select-col'; const check=document.createElement('input'); check.type='checkbox'; check.setAttribute('aria-label',`Zaznacz ${record.model} ${record.serial}`); check.checked=selectedEquipmentIds.has(record.id); check.addEventListener('click',event=>{ event.stopPropagation(); if(check.checked)selectedEquipmentIds.add(record.id);else selectedEquipmentIds.delete(record.id);selectedRecordId=record.id;renderEquipmentList(); });check.addEventListener('keydown',event=>event.stopPropagation()); checkCell.appendChild(check); row.appendChild(checkCell);
-        const values=[record.type,record.model,record.producer,record.serial,record.passport,record.status?.toLocaleLowerCase('pl'),record.ownership,formatDate(record.productionDate),formatDate(record.purchaseDate),record.purchaseValue===''?'':formatNumber.format(Number(record.purchaseValue)),formatDate(record.installationDate),formatDate(record.disposalDate),formatDate(record.nextReview),record.marker,record.locationType?.toLocaleLowerCase('pl'),record.currentLocation,record.origin];
+        const values=[record.type,record.model,record.producer,record.serial,record.passport,record.status?.toLocaleLowerCase('pl'),record.ownership,formatDate(record.productionDate),formatDate(record.purchaseDate),record.purchaseValue===''?'':formatNumber.format(Number(record.purchaseValue)),formatDate(record.installationDate),formatDate(record.disposalDate),formatDate(record.nextReview),record.marker,record.locationType?.toLocaleLowerCase('pl'),record.currentLocation,record.origin,formatECareAt(eCare.sentAt)];
         values.forEach(value=>{ const cell=document.createElement('td'); cell.textContent=value??''; row.appendChild(cell); });
         row.addEventListener('click',()=>openEquipment(record.id));
         row.addEventListener('keydown',event=>{ if(event.key==='Enter'||event.key===' '){ event.preventDefault(); openEquipment(record.id); } });
@@ -319,7 +365,7 @@
     const openEquipment=id=>{
       saveCurrentCardState(); const record=equipmentRecords.find(item=>item.id===id); if(!record) return;
       activeRecordId=id; selectedRecordId=id; restoreCardState(record.cardState||emptyCardState); if(!record.cardState) populateCard(record);
-      document.querySelector('[data-tab="location"]').click(); updateCardHeading(record); renderCounterHistory();
+      document.querySelector('[data-tab="location"]').click(); updateCardHeading(record); renderCounterHistory(); renderECare(record);
       equipmentList.hidden=true; equipmentCard.hidden=false; main.classList.remove('list-mode'); document.title=`${record.model||'Nowy sprzęt'} — Symfonia`; window.scrollTo(0,0);
     };
     const backToList=()=>{ saveCurrentCardState(); equipmentCard.hidden=true; equipmentList.hidden=false; main.classList.add('list-mode'); document.title='Symfonia — Kartoteka sprzętu'; renderEquipmentList(); window.scrollTo(0,0); };
@@ -398,14 +444,14 @@
       record.faults = ['2026-06-12T09:15:00','2026-08-21T14:30:00','2026-09-14T10:45:00'].map((date,i)=>({
         id:`fault-${++faultSequence}`,sequence:faultSequence,createdAt:date,reporter:faultReporters[(index+i)%faultReporters.length],
         description:descriptions[(index+i)%descriptions.length],action:faultActions[(index+i)%faultActions.length],
-        notes:['Przykładowe zgłoszenie podczas użytkowania sprzętu.','Przykładowy kontakt kontrolny ze zgłaszającym.','Zgłoszenie pokazowe — możliwa edycja i usunięcie.'][i]
+        notes:['Przykładowe zgłoszenie podczas użytkowania sprzętu.','Przykładowy kontakt kontrolny ze zgłaszającym.','Zgłoszenie pokazowe — możliwa edycja i usunięcie.'][i],user:['Admin','MK','AN','JP'][(index+i)%4]
       }));
     });
     const faultTab = document.createElement('button');
     faultTab.type='button'; faultTab.className='tab'; faultTab.dataset.tab='faults'; faultTab.textContent='Awarie';
     document.querySelector('[data-tab="service"]').after(faultTab);
     const faultView = document.createElement('section'); faultView.className='view'; faultView.id='faults';
-    faultView.innerHTML='<div class="fault-list"><div class="fault-toolbar"><button type="button" class="action" id="new-fault">+ Nowe zgłoszenie</button><input type="search" id="fault-search" placeholder="Szukaj zgłoszenia" aria-label="Szukaj awarii sprzętu"></div><p class="fault-notice">Demo pokazowe: automatyczna zmiana statusu sprzętu jest wyłączona. Edytować i usuwać można wyłącznie ostatnio dodane zgłoszenie.</p><div class="location-table-wrap"><table class="fault-table"><thead><tr><th>Data zgłoszenia</th><th>Zgłaszający</th><th>Opis zgłoszenia</th><th>Działanie</th><th>Uwagi</th><th>Operacje</th></tr></thead><tbody id="fault-rows"></tbody></table></div><div class="fault-summary" id="fault-count"></div></div>';
+    faultView.innerHTML='<div class="fault-list"><div class="fault-toolbar"><button type="button" class="action" id="new-fault">+ Nowe zgłoszenie</button><input type="search" id="fault-search" placeholder="Szukaj zgłoszenia" aria-label="Szukaj awarii sprzętu"></div><p class="fault-notice">Demo pokazowe: automatyczna zmiana statusu sprzętu jest wyłączona. Edytować i usuwać można wyłącznie ostatnio dodane zgłoszenie.</p><div class="location-table-wrap"><table class="fault-table"><thead><tr><th>Data zgłoszenia</th><th>Zgłaszający</th><th>Opis zgłoszenia</th><th>Działanie</th><th>Uwagi</th><th>Użytkownik</th><th>Operacje</th></tr></thead><tbody id="fault-rows"></tbody></table></div><div class="fault-summary" id="fault-count"></div></div>';
     document.querySelector('.viewbox').appendChild(faultView);
     const allFaults = document.createElement('section'); allFaults.id='all-faults-screen'; allFaults.className='screen'; allFaults.hidden=true;
     allFaults.innerHTML='<div class="backbar"><button type="button" id="back-from-faults">← Wróć do sprzętów</button><span>AWARIE — wszystkie zgłoszenia</span></div><div class="fault-list"><div class="fault-toolbar"><strong>Zgłoszenia awarii sprzętu</strong><input type="search" id="all-fault-search" placeholder="Szukaj sprzętu lub zgłoszenia" aria-label="Szukaj wszystkich awarii"></div><p class="fault-notice">Kliknij sprzęt, aby otworzyć jego zakładkę AWARIE i dodać zgłoszenie. Dane pokazowe i zmiany są dostępne do odświeżenia strony.</p><div class="location-table-wrap"><table class="fault-table"><thead><tr><th>Data zgłoszenia</th><th>Sprzęt</th><th>Zgłaszający</th><th>Opis zgłoszenia</th><th>Działanie</th><th>Uwagi</th></tr></thead><tbody id="all-fault-rows"></tbody></table></div><div class="fault-summary" id="all-fault-count"></div></div>';
@@ -417,9 +463,9 @@
     const faultDateFormat = new Intl.DateTimeFormat('pl-PL',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
     const displayFaultDate = date => faultDateFormat.format(new Date(date));
     const sortedFaults = entries => [...entries].sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt)||b.sequence-a.sequence);
-    const faultMatches = (entry,phrase) => !phrase || [displayFaultDate(entry.createdAt),entry.reporter,entry.description,entry.action,entry.notes].join(' ').toLocaleLowerCase('pl').includes(phrase);
+    const faultMatches = (entry,phrase) => !phrase || [displayFaultDate(entry.createdAt),entry.reporter,entry.description,entry.action,entry.notes,entry.user].join(' ').toLocaleLowerCase('pl').includes(phrase);
     const appendFaultCell=(row,value)=>{const cell=document.createElement('td'); cell.textContent=value; row.appendChild(cell); return cell;};
-    const emptyFaultTable=(body,message)=>{const row=document.createElement('tr'); const cell=appendFaultCell(row,message); cell.colSpan=6; cell.className='fault-empty'; body.appendChild(row);};
+    const emptyFaultTable=(body,message)=>{const row=document.createElement('tr'); const cell=appendFaultCell(row,message); cell.colSpan=body.id==='fault-rows'?7:6; cell.className='fault-empty'; body.appendChild(row);};
     function renderFaults() {
       const record=currentRecord(); if(!record) return;
       const body=document.getElementById('fault-rows'); body.replaceChildren();
@@ -427,7 +473,7 @@
       const visible=sortedFaults(entries).filter(entry=>faultMatches(entry,document.getElementById('fault-search').value.trim().toLocaleLowerCase('pl')));
       visible.forEach(entry=>{
         const row=document.createElement('tr'); row.dataset.faultId=entry.id;
-        [displayFaultDate(entry.createdAt),entry.reporter,entry.description,entry.action,entry.notes].forEach(value=>appendFaultCell(row,value));
+        [displayFaultDate(entry.createdAt),entry.reporter,entry.description,entry.action,entry.notes,entry.user||'Admin'].forEach(value=>appendFaultCell(row,value));
         const actions=appendFaultCell(row,'');
         [['Edytuj',()=>openFaultForm(entry.id)],['Usuń',()=>askDeleteFault(entry.id)]].forEach(([label,handler])=>{
           const button=document.createElement('button'); button.type='button'; button.textContent=label; button.disabled=entry!==latest;
@@ -482,7 +528,7 @@
     faultForm.addEventListener('submit',event=>{
       event.preventDefault(); if(!faultForm.reportValidity()) return;
       const record=equipmentRecords.find(item=>item.id===faultRecordId); if(!record) return;
-      const values={reporter:reporterSelect.value,description:descriptionSelect.value,action:actionSelect.value,notes:document.getElementById('fault-notes').value.trim()};
+      const values={reporter:reporterSelect.value,description:descriptionSelect.value,action:actionSelect.value,notes:document.getElementById('fault-notes').value.trim(),user:'Admin'};
       if(editingFaultId) {
         const entry=faultsOf(record).find(item=>item.id===editingFaultId); if(!entry || newestFault(record)!==entry) return;
         Object.assign(entry,values,{updatedAt:new Date().toISOString()});
@@ -505,9 +551,9 @@
     const counterSupported=type=>['respirator','koncentrator'].includes((type||'').trim().toLocaleLowerCase('pl'));
     equipmentRecords.forEach((record,index)=>{
       record.counterHistory=counterSupported(record.type)?[
-        {date:'2026-06-12T09:15:00',value:1200+index*10,operation:'Odczyt okresowy'},
-        {date:'2026-08-21T14:30:00',value:1550+index*10,operation:'Odczyt kontrolny'},
-        {date:'2026-09-14T10:45:00',value:1800+index*10,operation:'Odczyt okresowy'}
+        {date:'2026-06-12T09:15:00',value:1200+index*10,operation:'Odczyt okresowy',user:index%2?'MK':'Admin'},
+        {date:'2026-08-21T14:30:00',value:1550+index*10,operation:'Odczyt kontrolny',user:index%3?'AN':'Admin'},
+        {date:'2026-09-14T10:45:00',value:1800+index*10,operation:'Odczyt okresowy',user:index%2?'JP':'Admin'}
       ]:[];
     });
     const counterButton=document.getElementById('enter-counter');
@@ -521,8 +567,8 @@
       const container=document.querySelector('#counter .empty-table'); container.replaceChildren();
       container.setAttribute('aria-label','Historia odczytów licznika');
       [...history].reverse().forEach(entry=>{
-        const row=document.createElement('div'); row.style.cssText='display:grid;grid-template-columns:90px 90px 1fr;border-bottom:1px solid #ddd;min-height:32px';
-        [formatDate(entry.date.slice(0,10)),String(entry.value).replace('.',','),entry.operation].forEach(value=>{const cell=document.createElement('span');cell.textContent=value;cell.style.cssText='padding:7px 8px;border-right:1px solid #ddd';row.appendChild(cell);});
+        const row=document.createElement('div'); row.style.cssText='display:grid;grid-template-columns:90px 90px 1fr 90px;border-bottom:1px solid #ddd;min-height:32px';
+        [formatDate(entry.date.slice(0,10)),String(entry.value).replace('.',','),entry.operation,entry.user||'Admin'].forEach(value=>{const cell=document.createElement('span');cell.textContent=value;cell.style.cssText='padding:7px 8px;border-right:1px solid #ddd';row.appendChild(cell);});
         row.title=displayFaultDate(entry.date); container.appendChild(row);
       });
       if(!history.length) {const empty=document.createElement('p');empty.style.cssText='padding:12px;line-height:1.5;color:#666';empty.textContent=supported?'Brak odczytów. Wprowadź pierwszy stan licznika.':'Historia licznika jest dostępna tylko dla respiratorów i koncentratorów.';container.appendChild(empty);}
@@ -554,7 +600,7 @@
     document.getElementById('counter-form').addEventListener('submit',event=>{
       event.preventDefault();const record=currentRecord();const value=Number(counterValue.value);
       if(!record||!counterSupported(cardFields.type.value)||!event.target.reportValidity()||!Number.isFinite(value)||value<0)return;
-      (record.counterHistory||(record.counterHistory=[])).push({date:new Date().toISOString(),value,operation:'Odczyt ręczny'});
+      (record.counterHistory||(record.counterHistory=[])).push({date:new Date().toISOString(),value,operation:'Odczyt ręczny',user:'Admin'});
       renderCounterHistory();saveCurrentCardState();counterDialog.close();show('Dodano odczyt do historii licznika');
     });
     renderEquipmentList();
@@ -573,6 +619,11 @@
     .dispatch-register summary { cursor:pointer; line-height:1.6; }
     .dispatch-register li { line-height:1.7; }
     .dispatch-register p { padding:0 12px; line-height:1.6; }
+    .issue-history-table th:first-child, .issue-history-table td:first-child { width:110px; }
+    .issue-history-table th:nth-child(2) { width:260px; }
+    .issue-history-table th:nth-child(3) { width:100px; }
+    .issue-history-table td { padding:6px 8px; }
+    .issue-history-table details { border:0; padding:0; }
   </style>
   <dialog id="dispatch-dialog" class="fault-dialog" aria-labelledby="dispatch-title">
     <h2 id="dispatch-title">Wydanie sprzętu do pacjenta lub personelu</h2>
@@ -649,18 +700,21 @@
     const selectedRecipient=()=>demoRecipients.find(item=>item.id===dispatchRecipient.value&&item.kind===dispatchKind.value);
     let dispatchRecordId=null,dispatchSequence=0,nfzDispatchConfirmed=false;
     const issueView=document.createElement('section');issueView.id='issue';issueView.className='view';
-    issueView.innerHTML='<div class="dispatch-register"><h3>Rejestr wydań i kontroli sprzętu</h3><p>Wydanie rozpocznij przyciskiem „Wydanie do pacjenta / personelu” w panelu Operacje.</p><div id="dispatch-register-entries"></div></div>';
+    issueView.innerHTML='<div class="dispatch-register"><h3>Rejestr wydań i kontroli sprzętu</h3><p>Wydanie rozpocznij przyciskiem „Wydanie do pacjenta / personelu” w panelu Operacje.</p><div class="location-table-wrap"><table class="location-table issue-history-table"><thead><tr><th>Data</th><th>Odbiorca</th><th>Użytkownik</th><th>Kontrola</th></tr></thead><tbody id="dispatch-register-entries"></tbody></table></div></div>';
     document.querySelector('.viewbox').appendChild(issueView);
     function renderDispatchRegister(){
       const container=document.getElementById('dispatch-register-entries');container.replaceChildren();
       const entries=currentRecord()?.dispatches||[];
-      if(!entries.length){const empty=document.createElement('p');empty.textContent='Brak zapisanych wydań dla tego sprzętu.';container.appendChild(empty);return;}
+      if(!entries.length){const row=container.insertRow(),empty=row.insertCell();empty.colSpan=4;empty.textContent='Brak zapisanych wydań dla tego sprzętu.';return;}
       [...entries].reverse().forEach(entry=>{
+        const row=container.insertRow();
+        [formatDate(entry.date),`${entry.kind} · ${entry.recipient.code} · ${entry.recipient.name}`,entry.user||'Admin'].forEach(value=>{const cell=row.insertCell();cell.textContent=value;});
+        const detailCell=row.insertCell();
         const detail=document.createElement('details'),summary=document.createElement('summary');
-        summary.textContent=`${formatDate(entry.date)} · ${entry.kind} · ${entry.recipient.code} · ${entry.recipient.name}`;detail.appendChild(summary);
+        summary.textContent='Pokaż kontrolę';detail.appendChild(summary);
         const info=document.createElement('p');info.textContent=`${entry.type} · ${entry.model} · Z lokalizacji: ${entry.from||'nieokreślona'} · Status po wydaniu: AKTYWNY${entry.flow!==null?` · Przepływ: ${String(entry.flow).replace('.',',')} L/min`:''}`;detail.appendChild(info);
         const list=document.createElement('ul');entry.checks.forEach(check=>{const li=document.createElement('li');li.textContent=`✓ ${check.group}: ${check.label}`;list.appendChild(li);});detail.appendChild(list);
-        const saved=document.createElement('p');saved.textContent=`Zapis kontroli: ${displayFaultDate(entry.savedAt)}${entry.confirmedNonWarehouse?' · Potwierdzono wydanie spoza magazynu.':''}`;detail.appendChild(saved);container.appendChild(detail);
+        const saved=document.createElement('p');saved.textContent=`Zapis kontroli: ${displayFaultDate(entry.savedAt)}${entry.confirmedNonWarehouse?' · Potwierdzono wydanie spoza magazynu.':''}`;detail.appendChild(saved);detailCell.appendChild(detail);
       });
     }
     document.querySelector('[data-tab="issue"]').addEventListener('click',renderDispatchRegister);
@@ -715,7 +769,7 @@
         document.getElementById('dispatch-nfz-question').textContent=`W magazynie jest sprzęt ze znacznikiem ${nfz.expected} (tabela powyżej). Czy chcesz mimo to zmienić znacznik ${nfz.previous||'(brak)'} na ${nfz.expected} i wydać obecny sprzęt?`;
         document.getElementById('dispatch-nfz-confirm').hidden=false;return;
       }
-      const entry={id:`dispatch-${++dispatchSequence}`,date:document.getElementById('dispatch-date').value,savedAt:new Date().toISOString(),kind:dispatchKind.value,recipient:{...recipient},from:dispatchLocation(),type:cardFields.type.value,model:cardFields.model.value,flow,confirmedNonWarehouse:!dispatchIsWarehouse(),checks:checkboxes.map(input=>({group:input.dataset.group,label:input.dataset.check,checked:true}))};
+      const entry={id:`dispatch-${++dispatchSequence}`,date:document.getElementById('dispatch-date').value,savedAt:new Date().toISOString(),kind:dispatchKind.value,recipient:{...recipient},from:dispatchLocation(),type:cardFields.type.value,model:cardFields.model.value,flow,confirmedNonWarehouse:!dispatchIsWarehouse(),user:'Admin',checks:checkboxes.map(input=>({group:input.dataset.group,label:input.dataset.check,checked:true}))};
       if(nfz?.expected&&nfz.previous!==nfz.expected){
         cardFields.marker.value=nfz.expected;record.marker=nfz.expected;
         registerNfzChange(record,nfz.previous,nfz.expected,entry.date,`Wydanie do pacjenta ${recipient.code}`);
@@ -812,7 +866,7 @@
         const warehouse=['MAGAZYN POZ','MAGAZYN WAW'].includes(from),changeLocation=warehouse||move;
         const number=`SRV/${date.replaceAll('-','')}/${String(++serviceOrderSequence).padStart(4,'0')}`;
         const entry={number,date,provider,kind,from,changeLocation,createdAt:now.toISOString()};
-        const serviceValues=[date,'',date,number,kind,provider,record.counterHistory?.length?record.counterHistory[record.counterHistory.length-1].value:'','',false,`Zlecenie: ${kind}`];
+        const serviceValues=[date,'',date,number,kind,provider,record.counterHistory?.length?record.counterHistory[record.counterHistory.length-1].value:'','',false,`Zlecenie: ${kind}`,'Admin'];
         const serviceRow=copyState(emptyCardState.services[0]);serviceRow.forEach((cell,index)=>{if(cell.type==='checkbox')cell.checked=false;else cell.value=String(serviceValues[index]);});
         state.services.unshift(serviceRow);(record.serviceOrders||(record.serviceOrders=[])).push(entry);
         if(changeLocation){
@@ -850,13 +904,14 @@
     .nfz-panel .fault-notice { border-bottom:1px solid #ccd7e7; }
     .nfz-card-list { min-height:546px; border:1px solid var(--line); display:flex; flex-direction:column; }
     .nfz-card-list .location-table-wrap { min-height:400px; }
-    .nfz-history-table { min-width:1000px; }
+    .nfz-history-table { min-width:1150px; }
     .nfz-history-table th:first-child, .nfz-history-table td:first-child { width:110px; }
     .nfz-history-table th:nth-child(1) { width:110px; }
     .nfz-history-table th:nth-child(2), .nfz-history-table th:nth-child(3) { width:155px; }
     .nfz-history-table th:nth-child(4) { width:210px; }
-    .nfz-history-table th:nth-child(5) { width:155px; }
-    .nfz-history-table th:nth-child(6) { width:170px; }
+    .nfz-history-table th:nth-child(5) { width:100px; }
+    .nfz-history-table th:nth-child(6) { width:155px; }
+    .nfz-history-table th:nth-child(7) { width:170px; }
     .nfz-table-wrap { overflow:auto; }
     .nfz-report-table { min-width:1150px; width:100%; }
     .nfz-report-table th:nth-child(2) { width:130px; }
@@ -935,7 +990,7 @@
     let nfzChangeSequence=0;
     function registerNfzChange(record,previous,current,date,reason){
       if(previous===current)return null;
-      const change={id:`nfz-${++nfzChangeSequence}`,date,previous,current,reason,portalDone:false};
+      const change={id:`nfz-${++nfzChangeSequence}`,date,previous,current,reason,portalDone:false,user:'Admin'};
       (record.nfzChanges||(record.nfzChanges=[])).push(change);
       return change;
     }
@@ -947,7 +1002,7 @@
       const record=equipmentRecords.find(item=>item.id===id);if(!record)return;
       record.marker=current;
       const change=registerNfzChange(record,previous,current,date,reason);
-      if(change&&actor)registerNfzPortal(record,change,true,actor,`${date}T12:00:00`);
+      if(change){change.user=['Admin','MK','AN','JP'][nfzChangeSequence%4];if(actor)registerNfzPortal(record,change,true,actor,`${date}T12:00:00`);}
     };
     sampleNfz('eq-2','MAZ-DOR.','WIEL-DOR.-III','2026-07-15','Wydanie do pacjenta','Alicja Demo');
     sampleNfz('eq-3','WIEL-DOR.-III','MAZ-DOR.','2026-08-21','Zmiana województwa',null);
@@ -961,7 +1016,7 @@
     const nfzTab=document.createElement('button');nfzTab.type='button';nfzTab.className='tab';nfzTab.dataset.tab='nfz';nfzTab.textContent='NFZ';
     document.querySelector('[data-tab="issue"]').after(nfzTab);
     const nfzView=document.createElement('section');nfzView.id='nfz';nfzView.className='view';
-    nfzView.innerHTML='<div class="nfz-card-list"><div class="list-toolbar">Historia zmian znacznika NFZ</div><div class="location-table-wrap"><table class="location-table nfz-history-table"><thead><tr><th>Data zmiany</th><th>Poprzedni znacznik</th><th>Obecny znacznik</th><th>Powód</th><th>Data operacji w portalu</th><th>Wykonał</th></tr></thead><tbody id="nfz-changes-body"></tbody></table></div><div class="list-footer"><span class="row-count" id="nfz-card-count">Liczba wierszy: 0</span></div></div>';
+    nfzView.innerHTML='<div class="nfz-card-list"><div class="list-toolbar">Historia zmian znacznika NFZ</div><div class="location-table-wrap"><table class="location-table nfz-history-table"><thead><tr><th>Data zmiany</th><th>Poprzedni znacznik</th><th>Obecny znacznik</th><th>Powód</th><th>Użytkownik</th><th>Data operacji w portalu</th><th>Wykonał</th></tr></thead><tbody id="nfz-changes-body"></tbody></table></div><div class="list-footer"><span class="row-count" id="nfz-card-count">Liczba wierszy: 0</span></div></div>';
     document.querySelector('.viewbox').appendChild(nfzView);liveTabs.add('nfz');markCardFeatures();
     function nfzCell(row,value){const cell=row.insertCell();cell.textContent=value??'';return cell;}
     function renderNfzTab(){
@@ -970,9 +1025,9 @@
       [...(record.nfzChanges||[])].reverse().forEach(change=>{
         const latest=change.portalDone?[...(record.nfzPortalHistory||[])].reverse().find(item=>item.changeId===change.id&&item.action==='Potwierdzono wykonanie'):null;
         const row=changes.insertRow();
-        [formatDate(change.date),change.previous||'—',change.current||'—',change.reason,latest?displayFaultDate(latest.at):'—',latest?.actor||'—'].forEach(value=>nfzCell(row,value));
+        [formatDate(change.date),change.previous||'—',change.current||'—',change.reason,change.user||'Admin',latest?displayFaultDate(latest.at):'—',latest?.actor||'—'].forEach(value=>nfzCell(row,value));
       });
-      if(!changes.rows.length){const row=changes.insertRow(),cell=nfzCell(row,'Brak zmian znacznika dla tego sprzętu.');cell.colSpan=6;cell.className='nfz-empty';}
+      if(!changes.rows.length){const row=changes.insertRow(),cell=nfzCell(row,'Brak zmian znacznika dla tego sprzętu.');cell.colSpan=7;cell.className='nfz-empty';}
       document.getElementById('nfz-card-count').textContent=`Liczba wierszy: ${(record.nfzChanges||[]).length}`;
     }
     nfzTab.addEventListener('click',()=>{
@@ -1151,14 +1206,14 @@
       }
       const rule=passportRule(record),purchase=record.purchaseDate||'2024-01-15',reviewDate=passportPlusMonths(purchase,6),repairDate=passportPlusMonths(purchase,11);
       record.passportTech={sourceModel:record.model,startDate:record.installationDate||passportPlusDays(record.purchaseDate,7),warrantyMonths:rule.warrantyMonths,requirements:`Przegląd okresowy co ${rule.reviewMonths} mies. (słownik demonstracyjny dla modelu)`,cards:record.type?[
-        {id:`${record.id}-kp-1`,date:reviewDate,kind:'Przegląd',number:`KP/${reviewDate.slice(0,4)}/${record.id.replace(/\D/g,'').padStart(4,'0')}-1`,provider:'Serwis MedTech Demo',description:'Kontrola stanu technicznego, obudowy, zasilania i akcesoriów. Test funkcjonalny według instrukcji producenta.',result:'Urządzenie sprawne. Zalecono kolejny przegląd okresowy.',nextDate:passportPlusMonths(reviewDate,rule.reviewMonths),technician:'Jan Kowalski (demo)'},
-        {id:`${record.id}-kp-2`,date:repairDate,kind:'Naprawa',number:`KP/${repairDate.slice(0,4)}/${record.id.replace(/\D/g,'').padStart(4,'0')}-2`,provider:'Centrum Napraw Demo',description:'Zgłoszono niestabilną pracę urządzenia. Wymieniono element eksploatacyjny i wykonano testy kontrolne.',result:'Test końcowy pozytywny; sprzęt dopuszczono do użytkowania.',nextDate:passportPlusMonths(repairDate,rule.reviewMonths),technician:'Anna Nowak (demo)'}
+        {id:`${record.id}-kp-1`,date:reviewDate,kind:'Przegląd',number:`KP/${reviewDate.slice(0,4)}/${record.id.replace(/\D/g,'').padStart(4,'0')}-1`,provider:'Serwis MedTech Demo',description:'Kontrola stanu technicznego, obudowy, zasilania i akcesoriów. Test funkcjonalny według instrukcji producenta.',result:'Urządzenie sprawne. Zalecono kolejny przegląd okresowy.',nextDate:passportPlusMonths(reviewDate,rule.reviewMonths),technician:'Jan Kowalski (demo)',user:'Admin'},
+        {id:`${record.id}-kp-2`,date:repairDate,kind:'Naprawa',number:`KP/${repairDate.slice(0,4)}/${record.id.replace(/\D/g,'').padStart(4,'0')}-2`,provider:'Centrum Napraw Demo',description:'Zgłoszono niestabilną pracę urządzenia. Wymieniono element eksploatacyjny i wykonano testy kontrolne.',result:'Test końcowy pozytywny; sprzęt dopuszczono do użytkowania.',nextDate:passportPlusMonths(repairDate,rule.reviewMonths),technician:'Anna Nowak (demo)',user:'AN'}
       ]:[]};
       return record.passportTech;
     }
     const passportTab=document.createElement('button');passportTab.type='button';passportTab.className='tab';passportTab.dataset.tab='passport';passportTab.textContent='Paszport techniczny';nfzTab.after(passportTab);
     const passportView=document.createElement('section');passportView.className='view';passportView.id='passport';
-    passportView.innerHTML='<div class="passport-panel"><h3>Paszport techniczny — VitalAire</h3><p class="passport-note">Dane paszportu pochodzą z karty sprzętu i fikcyjnego słownika modelu. Druga strona paszportu pozostaje pusta. Poniższe karty pracy i ich obrazy załączników są demonstracyjne.</p><div class="passport-settings"><label>Data rozpoczęcia eksploatacji<input id="passport-start-date" type="date" readonly></label><label>Okres gwarancji (mies.)<span class="passport-warranty-control"><input id="passport-warranty-months" type="number" readonly aria-readonly="true" title="Zmiana wymaga specjalnych uprawnień"><button type="button" id="passport-warranty-change">Zmień</button></span></label><label>Data zakończenia gwarancji<input id="passport-warranty-end" readonly></label><label>Wymagania serwisowe urządzenia<textarea id="passport-requirements" readonly></textarea></label></div><div class="passport-work-heading"><h4>Karty pracy serwisu — przeglądy i naprawy</h4><button type="button" class="action" id="passport-add-work">Dodaj kartę pracy</button></div><div class="passport-work-table-wrap"><table class="passport-work-table"><thead><tr><th>Data</th><th>Rodzaj</th><th>Nr karty</th><th>Wykonawca</th><th>Wynik</th><th>Następna czynność</th><th>Załącznik</th></tr></thead><tbody id="passport-work-rows"></tbody></table></div><div class="list-footer"><span class="row-count" id="passport-work-count">Liczba wierszy: 0</span></div></div>';
+    passportView.innerHTML='<div class="passport-panel"><h3>Paszport techniczny — VitalAire</h3><p class="passport-note">Dane paszportu pochodzą z karty sprzętu i fikcyjnego słownika modelu. Druga strona paszportu pozostaje pusta. Poniższe karty pracy i ich obrazy załączników są demonstracyjne.</p><div class="passport-settings"><label>Data rozpoczęcia eksploatacji<input id="passport-start-date" type="date" readonly></label><label>Okres gwarancji (mies.)<span class="passport-warranty-control"><input id="passport-warranty-months" type="number" readonly aria-readonly="true" title="Zmiana wymaga specjalnych uprawnień"><button type="button" id="passport-warranty-change">Zmień</button></span></label><label>Data zakończenia gwarancji<input id="passport-warranty-end" readonly></label><label>Wymagania serwisowe urządzenia<textarea id="passport-requirements" readonly></textarea></label></div><div class="passport-work-heading"><h4>Karty pracy serwisu — przeglądy i naprawy</h4><button type="button" class="action" id="passport-add-work">Dodaj kartę pracy</button></div><div class="passport-work-table-wrap"><table class="passport-work-table"><thead><tr><th>Data</th><th>Rodzaj</th><th>Nr karty</th><th>Wykonawca</th><th>Wynik</th><th>Następna czynność</th><th>Użytkownik</th><th>Załącznik</th></tr></thead><tbody id="passport-work-rows"></tbody></table></div><div class="list-footer"><span class="row-count" id="passport-work-count">Liczba wierszy: 0</span></div></div>';
     document.querySelector('.viewbox').appendChild(passportView);
     liveTabs.add('passport');
     const passportStart=document.getElementById('passport-start-date'),passportWarranty=document.getElementById('passport-warranty-months'),passportRequirements=document.getElementById('passport-requirements');
@@ -1169,7 +1224,7 @@
       updatePassportWarrantyEnd();
       const body=document.getElementById('passport-work-rows');body.replaceChildren();
       [...data.cards].sort((a,b)=>b.date.localeCompare(a.date)).forEach(card=>{
-        const row=body.insertRow();[formatDate(card.date),card.kind,card.number,card.provider,card.result,formatDate(card.nextDate)||'—'].forEach(value=>{const cell=row.insertCell();cell.textContent=value;});
+        const row=body.insertRow();[formatDate(card.date),card.kind,card.number,card.provider,card.result,formatDate(card.nextDate)||'—',card.user||'Admin'].forEach(value=>{const cell=row.insertCell();cell.textContent=value;});
         const cell=row.insertCell(),button=document.createElement('button');button.type='button';button.className='action';button.textContent='Pokaż skan';button.setAttribute('aria-label',`Pokaż fikcyjny skan karty pracy ${card.number}`);button.addEventListener('click',()=>openPassportPreview([record.id],true,card.id));cell.appendChild(button);
       });
       document.getElementById('passport-work-count').textContent=`Liczba wierszy: ${data.cards.length}`;
@@ -1185,7 +1240,7 @@
     const passportWorkDialog=document.getElementById('passport-work-dialog'),passportWorkForm=document.getElementById('passport-work-form');
     document.getElementById('passport-add-work').addEventListener('click',()=>{const record=currentRecord();if(!record)return;passportWorkForm.reset();passportWorkForm.elements.date.value=new Date().toISOString().slice(0,10);passportWorkForm.elements.number.value=`KP/DEMO/${String(passportTech(record).cards.length+1).padStart(3,'0')}`;passportWorkForm.elements.provider.value='Serwis MedTech Demo';passportWorkDialog.showModal();});
     document.getElementById('passport-work-cancel').addEventListener('click',()=>passportWorkDialog.close());
-    passportWorkForm.addEventListener('submit',event=>{event.preventDefault();if(!passportWorkForm.reportValidity())return;const record=currentRecord();if(!record)return;const values=new FormData(passportWorkForm),card={id:`${record.id}-kp-${Date.now()}`,date:values.get('date'),kind:values.get('kind'),number:String(values.get('number')).trim(),provider:String(values.get('provider')).trim(),description:String(values.get('description')).trim(),result:String(values.get('result')).trim(),nextDate:values.get('nextDate'),technician:String(values.get('technician')).trim()};passportTech(record).cards.push(card);passportWorkDialog.close();renderPassportTab();show('Dodano kartę pracy do paszportu');});
+    passportWorkForm.addEventListener('submit',event=>{event.preventDefault();if(!passportWorkForm.reportValidity())return;const record=currentRecord();if(!record)return;const values=new FormData(passportWorkForm),card={id:`${record.id}-kp-${Date.now()}`,date:values.get('date'),kind:values.get('kind'),number:String(values.get('number')).trim(),provider:String(values.get('provider')).trim(),description:String(values.get('description')).trim(),result:String(values.get('result')).trim(),nextDate:values.get('nextDate'),technician:String(values.get('technician')).trim(),user:'Admin'};passportTech(record).cards.push(card);passportWorkDialog.close();renderPassportTab();show('Dodano kartę pracy do paszportu');});
     const passportBatchButton=document.createElement('button');passportBatchButton.type='button';passportBatchButton.id='batch-print-passport';passportBatchButton.innerHTML='<span class="open-symbol">▥</span>Drukuj paszporty';document.querySelector('.equipment-actions').appendChild(passportBatchButton);
     const passportBatchDialog=document.getElementById('passport-batch-dialog'),passportPreviewDialog=document.getElementById('passport-preview-dialog');
     passportBatchButton.addEventListener('click',()=>{if(!selectedEquipmentIds.size){show('Zaznacz sprzęty na liście do wydruku paszportów');return;}document.getElementById('passport-batch-count').textContent=`Zaznaczono urządzeń: ${selectedEquipmentIds.size}`;passportBatchDialog.showModal();});
@@ -1230,6 +1285,111 @@
       document.getElementById('passport-preview-title').textContent=`Podgląd wydruku — ${records.length} ${records.length===1?'sprzęt':'sprzętów'}, ${pages.length} ${pages.length===1?'strona':'strony'}`;
       document.getElementById('passport-preview-pages').innerHTML=pages.join('');document.getElementById('passport-print-root').innerHTML=pages.join('');passportPreviewDialog.showModal();
     }
+  </script>
+  <script>
+    // Demonstracyjny słownik czynności jest przypisany do modelu urządzenia.
+    const activityOptionsByModel={
+      'EO-150':['Aktualizacja oprogramowania 1.06.10.00','Aktualizacja oprogramowania 1.06.15.00'],
+      'Trilogy Evo':['Aktualizacja oprogramowania 1.06.10.00','Aktualizacja oprogramowania 1.06.15.00','Akcja korygująca pianka'],
+      'BiPAP 40':['Aktualizacja oprogramowania 1.06.10.00','Akcja korygująca pianka'],
+      'Trilogy 100':['Aktualizacja oprogramowania 1.06.15.00','Akcja korygująca pianka'],
+      'Astral 150':['Aktualizacja oprogramowania 1.06.10.00','Akcja korygująca Astral-2026-FSN-01'],
+      'Koncentrator demo':['Aktualizacja oprogramowania 1.06.10.00','Akcja korygująca pianka'],
+      'Ssak demo':['Akcja korygująca pianka'],
+      'Pulsoksymetr demo':['Akcja korygująca pianka'],
+      'Asystor demo':['Akcja korygująca pianka'],
+      'Urządzenie pomocnicze demo':['Akcja korygująca pianka']
+    };
+    const activityOptionsFor=record=>activityOptionsByModel[record.model]||['Akcja korygująca pianka'];
+    const demoUsers=['Admin','MK','AN','JP','KW'];
+    equipmentRecords.forEach((record,index)=>{
+      const options=activityOptionsFor(record);
+      record.activities=[
+        {date:'2026-03-12',name:options[0],user:demoUsers[index%demoUsers.length]},
+        ...(options.length>1?[{date:'2026-07-22',name:options[(index%2)+1]||options[0],user:demoUsers[(index+2)%demoUsers.length]}]:[])
+      ];
+    });
+    const activityTab=document.querySelector('[data-tab="activities"]');
+    const activityForm=document.getElementById('activity-form');
+    const activityName=document.getElementById('activity-name');
+    const activityDate=document.getElementById('activity-date');
+    const activityError=document.getElementById('activity-error');
+    function renderActivities(){
+      const record=currentRecord();if(!record)return;
+      const selected=activityName.value;
+      activityName.replaceChildren(new Option('Wybierz czynność',''));
+      activityOptionsFor({...record,model:cardFields.model.value.trim()||record.model,type:cardFields.type.value.trim()||record.type}).forEach(name=>activityName.add(new Option(name,name)));
+      if([...activityName.options].some(option=>option.value===selected))activityName.value=selected;
+      const body=document.getElementById('activity-rows');body.replaceChildren();
+      [...(record.activities||[])].sort((a,b)=>b.date.localeCompare(a.date)).forEach(entry=>{
+        const row=body.insertRow();
+        [formatDate(entry.date),entry.name,entry.user||'Admin'].forEach(value=>{const cell=row.insertCell();cell.textContent=value;});
+      });
+      document.getElementById('activity-count').textContent=`Liczba wierszy: ${(record.activities||[]).length}`;
+    }
+    activityTab.addEventListener('click',()=>{activityError.textContent='';activityDate.value=demoLocalToday();renderActivities();});
+    cardFields.model.addEventListener('change',()=>{if(activityTab.classList.contains('active'))renderActivities();});
+    cardFields.type.addEventListener('change',()=>{if(activityTab.classList.contains('active'))renderActivities();});
+    activityForm.addEventListener('submit',event=>{
+      event.preventDefault();activityError.textContent='';
+      const record=currentRecord();if(!record||!activityForm.reportValidity())return;
+      const date=activityDate.value,name=activityName.value;
+      const allowed=activityOptionsFor({...record,model:cardFields.model.value.trim()||record.model,type:cardFields.type.value.trim()||record.type});
+      if(!allowed.includes(name)){activityError.textContent='Ta czynność nie jest dostępna dla wybranego modelu.';return;}
+      if((record.activities||[]).some(entry=>entry.date===date&&entry.name===name)){
+        activityError.textContent='Identyczna czynność z tą datą jest już na liście.';return;
+      }
+      (record.activities||(record.activities=[])).push({date,name,user:'Admin'});
+      renderActivities();show('Dodano czynność do historii sprzętu');
+    });
+    const activityBatchButton=document.createElement('button');
+    activityBatchButton.type='button';activityBatchButton.id='batch-activities';
+    activityBatchButton.innerHTML='<span class="open-symbol">✓</span>Czynności';
+    document.querySelector('.equipment-actions').appendChild(activityBatchButton);
+    const activityBatchDialog=document.createElement('dialog');
+    activityBatchDialog.id='activity-batch-dialog';
+    activityBatchDialog.innerHTML='<h3>Dodaj czynność do zaznaczonych sprzętów</h3><p id="activity-batch-count"></p><div class="location-table-wrap"><table class="activity-batch-table"><thead><tr><th>Typ</th><th>Model</th><th>Nr seryjny</th></tr></thead><tbody id="activity-batch-targets"></tbody></table></div><form id="activity-batch-form" class="activity-form"><label>Data wykonania<input id="activity-batch-date" type="date" required></label><label>Czynność dostępna dla wszystkich wybranych modeli<select id="activity-batch-name" required></select></label><div class="activity-batch-actions"><button class="action" type="submit" id="activity-batch-submit">Zapisz</button><button class="action" type="button" id="activity-batch-cancel">Anuluj</button></div></form><p class="activity-error" id="activity-batch-error" role="alert"></p>';
+    document.body.appendChild(activityBatchDialog);
+    const activityBatchForm=document.getElementById('activity-batch-form');
+    const activityBatchName=document.getElementById('activity-batch-name');
+    const activityBatchError=document.getElementById('activity-batch-error');
+    let activityBatchIds=[];
+    const demoLocalToday=()=>{const now=new Date();return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;};
+    activityBatchButton.addEventListener('click',()=>{
+      activityBatchIds=[...selectedEquipmentIds].filter(id=>equipmentRecords.some(record=>record.id===id));
+      if(!activityBatchIds.length){show('Zaznacz sprzęty na liście, aby dodać czynność.');return;}
+      const targets=activityBatchIds.map(id=>equipmentRecords.find(record=>record.id===id));
+      const common=activityOptionsFor(targets[0]).filter(name=>targets.every(record=>activityOptionsFor(record).includes(name)));
+      document.getElementById('activity-batch-count').textContent=`Zaznaczono urządzeń: ${targets.length}. Zapis dotyczy wszystkich pozycji z poniższej listy.`;
+      const body=document.getElementById('activity-batch-targets');body.replaceChildren();
+      targets.forEach(record=>{const row=body.insertRow();[record.type,record.model,record.serial].forEach(value=>{const cell=row.insertCell();cell.textContent=value;});});
+      activityBatchForm.reset();
+      document.getElementById('activity-batch-date').value=demoLocalToday();
+      activityBatchName.replaceChildren(new Option('Wybierz czynność',''));
+      common.forEach(name=>activityBatchName.add(new Option(name,name)));
+      activityBatchError.textContent=common.length?'':'Brak wspólnej czynności dla zaznaczonych modeli. Wybierz urządzenia obsługujące tę samą czynność.';
+      document.getElementById('activity-batch-submit').disabled=!common.length;
+      activityBatchDialog.showModal();
+    });
+    document.getElementById('activity-batch-cancel').addEventListener('click',()=>activityBatchDialog.close());
+    activityBatchForm.addEventListener('submit',event=>{
+      event.preventDefault();activityBatchError.textContent='';
+      if(!activityBatchForm.reportValidity())return;
+      const targets=activityBatchIds.map(id=>equipmentRecords.find(record=>record.id===id)).filter(Boolean);
+      const date=document.getElementById('activity-batch-date').value,name=activityBatchName.value;
+      if(!targets.length||!targets.every(record=>activityOptionsFor(record).includes(name))){
+        activityBatchError.textContent='Czynność nie jest dostępna dla wszystkich zaznaczonych modeli.';return;
+      }
+      const duplicates=targets.filter(record=>(record.activities||[]).some(entry=>entry.date===date&&entry.name===name));
+      if(duplicates.length){
+        activityBatchError.textContent=`Nie zapisano żadnej pozycji: wpis o tej samej dacie i nazwie istnieje już dla: ${duplicates.map(record=>record.serial).join(', ')}.`;
+        return;
+      }
+      targets.forEach(record=>(record.activities||(record.activities=[])).push({date,name,user:'Admin'}));
+      activityBatchDialog.close();
+      show(`Dodano czynność do ${targets.length} urządzeń`);
+    });
+    liveTabs.add('activities');markCardFeatures();
   </script>
 </body>
 </html>
