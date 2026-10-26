@@ -130,7 +130,7 @@
     .equipment-actions .open-symbol { display:block; color:#686f79; font-size:18px; line-height:23px; }
     .equipment-search { width:100%; height:24px; margin-bottom:2px; font-style:italic; }
     .equipment-table-wrap { height:calc(100vh - 177px); min-height:520px; overflow:auto; border:1px solid #b7b7b7; background:#fff; }
-    .equipment-table { border-collapse:collapse; table-layout:fixed; width:1800px; font-size:10px; }
+    .equipment-table { border-collapse:collapse; table-layout:fixed; width:1900px; font-size:10px; }
     .equipment-table th { position:sticky; top:0; z-index:1; height:20px; padding:2px 4px; border-right:1px solid #d4d6d9; text-align:left; color:#fff; background:#6d7480; white-space:nowrap; }
     .equipment-table td { height:19px; padding:2px 4px; border-right:1px solid #e3e4e6; border-bottom:1px solid #ececee; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     .equipment-table tbody tr:nth-child(even) { background:#f3f4f6; }
@@ -180,6 +180,26 @@
     .fault-empty { text-align:center; padding:30px !important; color:#707784; }
     .equipment-table th:nth-child(2) { width:165px; }
     .equipment-table th:nth-child(19) { width:145px; }
+    .equipment-table th:nth-child(20) { width:105px; }
+    .book-value-row { grid-template-columns:132px 100px; }
+    .book-value-row label { text-align:right; }
+    .book-value-row input { text-align:right; background:#f4f5f6; }
+    .liquidation-dialog { width:min(700px,96vw); max-height:90vh; overflow:auto; border:1px solid #9ca6b5; padding:18px; }
+    .liquidation-dialog h3 { margin:0 0 12px; font-size:16px; }
+    .liquidation-dialog label { display:block; margin:12px 0 5px; font-weight:bold; }
+    .liquidation-dialog select, .liquidation-dialog textarea, .liquidation-dialog input[type="date"] { width:100%; }
+    .liquidation-dialog textarea { min-height:70px; padding:6px; font:12px Arial,sans-serif; resize:vertical; }
+    .liquidation-dialog .permission-demo { display:flex; align-items:center; gap:8px; font-weight:normal; }
+    .liquidation-dialog .permission-demo input { width:16px; height:16px; }
+    .liquidation-dialog .dialog-actions { display:flex; justify-content:flex-end; gap:8px; margin-top:14px; }
+    .liquidation-dialog .dialog-actions button { min-width:85px; }
+    .liquidation-dialog table { width:100%; border-collapse:collapse; margin-top:12px; }
+    .liquidation-dialog th { padding:6px; background:#707784; color:#fff; text-align:left; font-weight:normal; }
+    .liquidation-dialog td { padding:6px; border-bottom:1px solid #ddd; }
+    .liquidation-error { min-height:20px; margin:10px 0 0; color:#a51f1f; }
+    #equipment-card-screen.is-liquidated input:disabled, #equipment-card-screen.is-liquidated select:disabled { opacity:1; color:#333; background:#f3f3f3; }
+    .liquidation-card-summary { margin:3px 0; padding:8px; border:1px solid #d0d3d8; color:#4a515c; background:#f5f6f7; line-height:1.4; overflow-wrap:anywhere; }
+    .liquidation-card-summary:empty { display:none; }
     button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline:2px solid var(--blue); outline-offset:2px; }
   </style>
 </head>
@@ -193,7 +213,7 @@
     <main class="main list-mode">
       <section class="screen equipment-browser" id="equipment-list-screen" aria-label="Lista sprzętu medycznego">
         <aside class="filters-panel"><div class="filters-heading">Filtry</div><input id="filter-search" type="search" placeholder="Szukaj" aria-label="Filtruj sprzęt"></aside>
-        <div class="equipment-content"><div class="equipment-title">Sprzęt medyczny</div><div class="equipment-actions"><button id="new-equipment" type="button"><span class="add-symbol">+</span>Dodaj</button><button id="open-equipment" type="button"><span class="open-symbol">▣</span>Otwórz</button></div><input class="equipment-search" id="equipment-search" type="search" placeholder="Szukaj" aria-label="Szukaj sprzętu"><div class="equipment-table-wrap"><table class="equipment-table"><thead><tr><th class="select-col"></th><th>Typ</th><th>Model</th><th>Producent</th><th>Nr seryjny</th><th>Nr paszportu</th><th>Status</th><th>Typ własności</th><th>Data produkcji</th><th>Data zakupu</th><th>Wartość zakupu</th><th>Data instalacji</th><th>Data likwidacji</th><th>Następny przegląd</th><th>NFZ znacznik</th><th>Typ lokalizacji</th><th>Akt. lokalizacja</th><th>Pochodzenie</th><th>Data wysłania eOpieka</th></tr></thead><tbody id="equipment-rows"></tbody></table></div><div class="equipment-list-footer"><span id="equipment-count"></span><span>Dane przykładowe prototypu</span></div></div>
+        <div class="equipment-content"><div class="equipment-title">Sprzęt medyczny</div><div class="equipment-actions"><button id="new-equipment" type="button"><span class="add-symbol">+</span>Dodaj</button><button id="open-equipment" type="button"><span class="open-symbol">▣</span>Otwórz</button></div><input class="equipment-search" id="equipment-search" type="search" placeholder="Szukaj" aria-label="Szukaj sprzętu"><div class="equipment-table-wrap"><table class="equipment-table"><thead><tr><th class="select-col"></th><th>Typ</th><th>Model</th><th>Producent</th><th>Nr seryjny</th><th>Nr paszportu</th><th>Status</th><th>Typ własności</th><th>Data produkcji</th><th>Data zakupu</th><th>Wartość zakupu</th><th>Data instalacji</th><th>Data likwidacji</th><th>Następny przegląd</th><th>NFZ znacznik</th><th>Typ lokalizacji</th><th>Akt. lokalizacja</th><th>Pochodzenie</th><th>Data wysłania eOpieka</th><th>Wartość księgowa</th></tr></thead><tbody id="equipment-rows"></tbody></table></div><div class="equipment-list-footer"><span id="equipment-count"></span><span>Dane przykładowe prototypu</span></div></div>
       </section>
       <section class="screen" id="equipment-card-screen" aria-label="Karta sprzętu" hidden>
       <div class="backbar"><button id="back-to-list" type="button">← Wróć do listy</button><span id="card-heading"></span></div>
@@ -202,7 +222,7 @@
           <div class="stack">
             <div class="form-row"><label for="equipment-type">Typ:</label><input id="equipment-type" aria-label="Typ sprzętu"></div><div class="form-row"><label>Model:</label><input></div><div class="form-row"><label>Producent:</label><input></div><div class="form-row"><label>Nr seryjny:</label><input></div><div class="form-row"><label>Nr paszportu:</label><input></div><div class="form-row"><label>Nr inwent.:</label><input></div>
           </div><div class="stack">
-            <div class="form-row"><label>Data produkcji:</label><div class="date-input"><input placeholder="Select a date"><button class="calendar" type="button">15</button></div></div><div class="form-row"><label>Data instalacji:</label><div class="date-input"><input placeholder="Select a date"><button class="calendar" type="button">15</button></div></div><div class="form-row"><label>Data likwidacji:</label><div class="date-input"><input placeholder="Select a date"><button class="calendar" type="button">15</button></div></div><div class="form-row"><label>Nast. przegląd:</label><div class="date-input"><input placeholder="Select a date"><button class="calendar" type="button">15</button></div></div>
+            <div class="form-row"><label>Data produkcji:</label><div class="date-input"><input placeholder="Select a date"><button class="calendar" type="button">15</button></div></div><div class="form-row book-value-row"><label for="book-value">Wart. księgowa:</label><input id="book-value" readonly></div><div class="form-row"><label>Data instalacji:</label><div class="date-input"><input placeholder="Select a date"><button class="calendar" type="button">15</button></div></div><div class="form-row"><label>Data likwidacji:</label><div class="date-input"><input placeholder="Select a date"><button class="calendar" type="button">15</button></div></div><div class="form-row"><label>Nast. przegląd:</label><div class="date-input"><input placeholder="Select a date"><button class="calendar" type="button">15</button></div></div>
           </div><div class="stack">
             <div class="form-row"><label>Status:</label><select id="status-choice"></select></div><div class="form-row"><label>Typ własności:</label><input></div><div class="form-row"><label>Województwo:</label><input></div><div class="form-row"><label>NFZ znacznik:</label><input></div><div class="form-row"><label>Pochodzenie:</label><input></div><div class="form-row"><label>Stan licznika:</label><input style="max-width:100px"></div>
           </div>
@@ -234,7 +254,7 @@
           <section class="view" id="activities"><div class="activity-list"><form class="activity-form" id="activity-form"><label>Data wykonania<input id="activity-date" type="date" required></label><label>Czynność dla modelu<select id="activity-name" required></select></label><button class="action" type="submit">Dodaj czynność</button></form><p class="activity-error" id="activity-error" role="alert"></p><div class="location-table-wrap"><table class="location-table activity-table"><thead><tr><th>Data</th><th>Nazwa czynności</th><th>Użytkownik</th></tr></thead><tbody id="activity-rows"></tbody></table></div><div class="list-footer"><span class="row-count" id="activity-count">Liczba wierszy: 0</span></div></div></section>
           <section class="view" id="placeholder"><div style="padding:18px;color:#666">Ta zakładka jest dostępna w widoku prototypu.</div></section>
         </div>
-      </section><fieldset class="operations"><legend>Operacje</legend><button class="action" data-action="Zmiana lokalizacji">Zmiana lokalizacji</button><button class="action" data-action="Wydanie do pacjenta">Wydanie do pacjenta</button><button class="action" data-action="Wydanie do serwisu">Wydanie do serwisu</button><button class="action" data-action="Zmiana magazynu">Zmiana magazynu</button><button class="action" data-action="Zmywalnia">Zmywalnia</button><button class="action" data-action="Przyjęcie na magazyn / lokalizację">Przyjęcie na magazyn / lokalizację</button></fieldset>
+      </section><fieldset class="operations"><legend>Operacje</legend><button class="action" data-action="Zmiana lokalizacji">Zmiana lokalizacji</button><button class="action" data-action="Wydanie do pacjenta">Wydanie do pacjenta</button><button class="action" data-action="Wydanie do serwisu">Wydanie do serwisu</button><button class="action" data-action="Zmiana magazynu">Zmiana magazynu</button><button class="action" data-action="Zmywalnia">Zmywalnia</button><button class="action" data-action="Przyjęcie na magazyn / lokalizację">Przyjęcie na magazyn / lokalizację</button><button class="action" data-action="Likwidacja" type="button">Likwidacja</button></fieldset>
       </div><div class="footer-actions"><button class="action" id="save-equipment" type="button">Zapisz</button><button class="action" id="new-equipment-card" type="button">Dodaj</button></div>
       </section>
     </main>
@@ -247,10 +267,10 @@
       document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
       const view=document.getElementById(tab.dataset.tab); (view || document.getElementById('placeholder')).classList.add('active');
     }));
-    document.querySelectorAll('[data-action]').forEach(button=>button.addEventListener('click',()=>{if(!['Wydanie do pacjenta','Wydanie do serwisu'].includes(button.dataset.action))show(button.dataset.action+' — funkcja jeszcze niedostępna');}));
+    document.querySelectorAll('[data-action]').forEach(button=>button.addEventListener('click',()=>{if(!['Wydanie do pacjenta','Wydanie do serwisu','Likwidacja'].includes(button.dataset.action))show(button.dataset.action+' — funkcja jeszcze niedostępna');}));
     document.querySelectorAll('.calendar').forEach(button=>button.addEventListener('click',()=>{ const input=button.previousElementSibling; input.type='date'; input.focus(); try { input.showPicker(); } catch(e) {} }));
     const locations = ['MAGAZYN POZ', 'MAGAZYN WAW', 'PACJENT', 'PERSONEL', 'SERWIS', 'MAGAZYN ZEW.'];
-    const statuses = ['AKTYWNY', 'DO ZWROTU', 'USZKODZONY', 'W NAPRAWIE', 'W DEZYNFEKCJI', 'W TRANSPORCIE', 'ZWRÓCONY', 'SPRZEDANY', 'ZLIKWIDOWANY'];
+    const statuses = ['AKTYWNY', 'DO ZWROTU', 'USZKODZONY', 'W NAPRAWIE', 'W DEZYNFEKCJI', 'W TRANSPORCIE', 'ZWRÓCONY', 'SPRZEDANY', 'WYCOFANY', 'ZLIKWIDOWANY'];
     const fillChoices = (select, choices, label) => { if (select.options.length) return; select.add(new Option(label, '')); choices.forEach(choice => select.add(new Option(choice, choice))); };
     const fillLocationChoices = scope => scope.querySelectorAll('.location-choice').forEach(select => fillChoices(select, locations, 'Wybierz lokalizację'));
     fillLocationChoices(document); fillChoices(document.getElementById('status-choice'), statuses, 'Wybierz status');
@@ -298,9 +318,9 @@
     sampleGroups.forEach((group,groupIndex)=>{
       for(let index=0;index<group.count;index++){
         const number=equipmentRecords.length+1;
-        const status=number%17===0?'ZLIKWIDOWANY':number%11===0?'USZKODZONY':number%8===0?'DO ZWROTU':number%13===0?'W NAPRAWIE':'AKTYWNY';
-        const locationType=status==='W NAPRAWIE'?'SERWIS':number%5===0?'MAGAZYN POZ':'PACJENT';
-        equipmentRecords.push({id:`eq-${number}`,type:'Respirator',model:group.model,producer:group.producer,serial:`DEMO-${String(groupIndex+1).padStart(2,'0')}-${String(index+1).padStart(3,'0')}`,passport:`2020/${String(130+number)}`,status,ownership:'własny',productionDate:group.produced,purchaseDate:group.bought,purchaseValue:group.price,installationDate:'',disposalDate:status==='ZLIKWIDOWANY'?'2024-12-31':'',nextReview:'',marker:'',locationType,currentLocation:locationType==='MAGAZYN POZ'?'Magazyn Poznań':locationType==='SERWIS'?'Serwis zewnętrzny':'ANDENT S.C.',origin:'ST.VINCENT'});
+        const status=number%17===0?'ZLIKWIDOWANY':number%19===0?'WYCOFANY':number%11===0?'USZKODZONY':number%8===0?'DO ZWROTU':number%13===0?'W NAPRAWIE':'AKTYWNY';
+        const locationType=status==='W NAPRAWIE'?'SERWIS':status==='WYCOFANY'||number%5===0?'MAGAZYN POZ':'PACJENT';
+        equipmentRecords.push({id:`eq-${number}`,type:'Respirator',model:group.model,producer:group.producer,serial:`DEMO-${String(groupIndex+1).padStart(2,'0')}-${String(index+1).padStart(3,'0')}`,passport:`2020/${String(130+number)}`,status,ownership:'własny',productionDate:group.produced,purchaseDate:group.bought,purchaseValue:group.price,bookValue:number%3===0?1250+number*12:2150+number*77,installationDate:'',disposalDate:status==='ZLIKWIDOWANY'?'2024-12-31':'',nextReview:'',marker:'',locationType,currentLocation:locationType==='MAGAZYN POZ'?'Magazyn Poznań':locationType==='SERWIS'?'Serwis zewnętrzny':'ANDENT S.C.',origin:'ST.VINCENT'});
       }
     });
     const equipmentBody=document.getElementById('equipment-rows');
@@ -308,6 +328,7 @@
     const equipmentCard=document.getElementById('equipment-card-screen');
     const main=document.querySelector('.main');
     const formatNumber=new Intl.NumberFormat('pl-PL',{minimumFractionDigits:2,maximumFractionDigits:2});
+    const renderBookValue=record=>{document.getElementById('book-value').value=record.bookValue===''?'':formatNumber.format(Number(record.bookValue??0))+' zł';};
     const formatDate=value=>{ if(!value) return ''; const parts=value.split('-'); return parts.length===3&&parts[0].length===4?`${parts[2]}-${parts[1]}-${parts[0]}`:value; };
     const eCareDateTime=new Intl.DateTimeFormat('pl-PL',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
     const formatECareAt=value=>value?eCareDateTime.format(new Date(value)):'';
@@ -354,7 +375,7 @@
         const row=document.createElement('tr'); row.tabIndex=0; row.setAttribute('role','button'); row.dataset.id=record.id; row.setAttribute('aria-label',`Otwórz kartę: ${record.type} ${record.model}, ${record.serial}`); if(record.id===selectedRecordId) row.classList.add('selected');
         const eCare=seedECare(record);
         const checkCell=document.createElement('td'); checkCell.className='select-col'; const check=document.createElement('input'); check.type='checkbox'; check.setAttribute('aria-label',`Zaznacz ${record.model} ${record.serial}`); check.checked=selectedEquipmentIds.has(record.id); check.addEventListener('click',event=>{ event.stopPropagation(); if(check.checked)selectedEquipmentIds.add(record.id);else selectedEquipmentIds.delete(record.id);selectedRecordId=record.id;renderEquipmentList(); });check.addEventListener('keydown',event=>event.stopPropagation()); checkCell.appendChild(check); row.appendChild(checkCell);
-        const values=[record.type,record.model,record.producer,record.serial,record.passport,record.status?.toLocaleLowerCase('pl'),record.ownership,formatDate(record.productionDate),formatDate(record.purchaseDate),record.purchaseValue===''?'':formatNumber.format(Number(record.purchaseValue)),formatDate(record.installationDate),formatDate(record.disposalDate),formatDate(record.nextReview),record.marker,record.locationType?.toLocaleLowerCase('pl'),record.currentLocation,record.origin,formatECareAt(eCare.sentAt)];
+        const values=[record.type,record.model,record.producer,record.serial,record.passport,record.status?.toLocaleLowerCase('pl'),record.ownership,formatDate(record.productionDate),formatDate(record.purchaseDate),record.purchaseValue===''?'':formatNumber.format(Number(record.purchaseValue)),formatDate(record.installationDate),formatDate(record.disposalDate),formatDate(record.nextReview),record.marker,record.locationType?.toLocaleLowerCase('pl'),record.currentLocation,record.origin,formatECareAt(eCare.sentAt),record.bookValue===''?'':formatNumber.format(Number(record.bookValue??0))];
         values.forEach(value=>{ const cell=document.createElement('td'); cell.textContent=value??''; row.appendChild(cell); });
         row.addEventListener('click',()=>openEquipment(record.id));
         row.addEventListener('keydown',event=>{ if(event.key==='Enter'||event.key===' '){ event.preventDefault(); openEquipment(record.id); } });
@@ -365,23 +386,31 @@
     const openEquipment=id=>{
       saveCurrentCardState(); const record=equipmentRecords.find(item=>item.id===id); if(!record) return;
       activeRecordId=id; selectedRecordId=id; restoreCardState(record.cardState||emptyCardState); if(!record.cardState) populateCard(record);
-      document.querySelector('[data-tab="location"]').click(); updateCardHeading(record); renderCounterHistory(); renderECare(record);
+      document.querySelector('[data-tab="location"]').click(); updateCardHeading(record); renderCounterHistory(); renderECare(record); renderBookValue(record); refreshLiquidationState(record);
       equipmentList.hidden=true; equipmentCard.hidden=false; main.classList.remove('list-mode'); document.title=`${record.model||'Nowy sprzęt'} — Symfonia`; window.scrollTo(0,0);
     };
     const backToList=()=>{ saveCurrentCardState(); equipmentCard.hidden=true; equipmentList.hidden=false; main.classList.add('list-mode'); document.title='Symfonia — Kartoteka sprzętu'; renderEquipmentList(); window.scrollTo(0,0); };
-    const addEquipment=()=>{ const id=`eq-${equipmentRecords.length+1}`; equipmentRecords.push({id,type:'',model:'',producer:'',serial:'',passport:'',status:'',ownership:'',productionDate:'',purchaseDate:'',purchaseValue:'',installationDate:'',disposalDate:'',nextReview:'',marker:'',locationType:'',currentLocation:'',origin:''}); openEquipment(id); };
+    const addEquipment=()=>{ const id=`eq-${equipmentRecords.length+1}`; equipmentRecords.push({id,type:'',model:'',producer:'',serial:'',passport:'',status:'',ownership:'',productionDate:'',purchaseDate:'',purchaseValue:'',bookValue:'',installationDate:'',disposalDate:'',nextReview:'',marker:'',locationType:'',currentLocation:'',origin:''}); openEquipment(id); };
     document.getElementById('back-to-list').addEventListener('click',backToList);
     document.getElementById('open-equipment').addEventListener('click',()=>{ const firstVisible=visibleRecords()[0]; const selected=visibleRecords().find(record=>record.id===selectedRecordId)||firstVisible; if(selected) openEquipment(selected.id); else show('Brak sprzętu do otwarcia'); });
     document.getElementById('new-equipment').addEventListener('click',addEquipment);
     document.getElementById('new-equipment-card').addEventListener('click',addEquipment);
     document.getElementById('save-equipment').addEventListener('click',()=>{
       const record=currentRecord(); if(!record) return;
-      const previousMarker=record.marker||'';
+      if(record.status==='ZLIKWIDOWANY'){show('Zlikwidowany sprzęt jest tylko do odczytu.');return;}
+      const requestedStatus=cardFields.status.value;
+      if(['WYCOFANY','ZLIKWIDOWANY'].includes(requestedStatus)&&requestedStatus!==record.status){show('Status WYCOFANY lub ZLIKWIDOWANY ustaw przez funkcję Likwidacja.');cardFields.status.value=record.status;return;}
+      if(record.status==='WYCOFANY'&&!['WYCOFANY','USZKODZONY','AKTYWNY'].includes(requestedStatus)){show('Wycofany sprzęt może wrócić tylko do statusu USZKODZONY lub AKTYWNY.');cardFields.status.value=record.status;return;}
+      const previousMarker=record.marker||'', previousStatus=record.status;
       Object.entries(cardFields).forEach(([key,field])=>{ if(!field) return; record[key]=dateFields.has(key)?toIsoDate(field.value):key==='purchaseValue'?(Number(field.value.replace(/\s/g,'').replace(',','.'))||0):field.value; });
+      if(previousStatus==='WYCOFANY'&&['USZKODZONY','AKTYWNY'].includes(record.status)){
+        (record.liquidationHistory||(record.liquidationHistory=[])).push({from:previousStatus,to:record.status,date:demoLocalToday(),reason:'Przywrócenie do użytkowania (demo)',user:'Admin'});
+        record.disposalDate='';cardFields.disposalDate.value='';
+      }
       if(record.status==='ZLIKWIDOWANY'&&previousMarker){
         record.marker='';cardFields.marker.value='';registerNfzChange(record,previousMarker,'',toIsoDate(cardFields.disposalDate.value)||nfzToday(),'Likwidacja sprzętu');
       }
-      record.cardState=captureCardState(); updateCardHeading(record); renderEquipmentList(); show('Zapisano dane sprzętu w prototypie');
+      record.cardState=captureCardState(); updateCardHeading(record); renderEquipmentList(); refreshLiquidationState(record); show('Zapisano dane sprzętu w prototypie');
     });
     document.getElementById('equipment-search').addEventListener('input',renderEquipmentList);
     document.getElementById('filter-search').addEventListener('input',renderEquipmentList);
@@ -436,7 +465,7 @@
       ['Pozostałe sprzęty','Urządzenie pomocnicze demo']
     ];
     additionalEquipment.forEach(([type,model],index)=>{
-      equipmentRecords.push({id:`eq-demo-${index+1}`,type,model,producer:'Producent demo',serial:`DEMO-${String(index+5).padStart(2,'0')}-001`,passport:`2026/${index+1}`,status:'AKTYWNY',ownership:'własny',productionDate:'2025-04-10',purchaseDate:'2025-05-15',purchaseValue:0,installationDate:'',disposalDate:'',nextReview:'2027-05-15',marker:'DEMO',locationType:'MAGAZYN POZ',currentLocation:'Magazyn Poznań',origin:'Dane przykładowe'});
+      equipmentRecords.push({id:`eq-demo-${index+1}`,type,model,producer:'Producent demo',serial:`DEMO-${String(index+5).padStart(2,'0')}-001`,passport:`2026/${index+1}`,status:'AKTYWNY',ownership:'własny',productionDate:'2025-04-10',purchaseDate:'2025-05-15',purchaseValue:0,bookValue:[750,1950,2600,1500,3300][index],installationDate:'',disposalDate:'',nextReview:'2027-05-15',marker:'DEMO',locationType:'MAGAZYN POZ',currentLocation:'Magazyn Poznań',origin:'Dane przykładowe'});
     });
     let faultSequence = 0;
     equipmentRecords.forEach((record,index)=>{
@@ -890,7 +919,7 @@
       equipmentCard.querySelectorAll('button').forEach(button=>{
         let ready=true;
         if(button.dataset.tab)ready=liveTabs.has(button.dataset.tab);
-        if(button.dataset.action)ready=['Wydanie do pacjenta','Wydanie do serwisu'].includes(button.dataset.action);
+        if(button.dataset.action)ready=['Wydanie do pacjenta','Wydanie do serwisu','Likwidacja'].includes(button.dataset.action);
         button.classList.toggle('feature-ready',ready);button.classList.toggle('feature-pending',!ready);
         if(!ready)button.title='Funkcja jeszcze niedostępna w prototypie';
       });
@@ -1390,6 +1419,127 @@
       show(`Dodano czynność do ${targets.length} urządzeń`);
     });
     liveTabs.add('activities');markCardFeatures();
+  </script>
+  <script>
+    // Likwidacja i uprawnienia są symulacją demonstracyjną; dane znikają po odświeżeniu strony.
+    const liquidationButton=document.createElement('button');
+    liquidationButton.type='button';liquidationButton.id='batch-liquidation';
+    liquidationButton.innerHTML='<span class="open-symbol">⊘</span>Likwidacja';
+    document.querySelector('.equipment-actions').appendChild(liquidationButton);
+    const liquidationSummary=document.createElement('p');
+    liquidationSummary.id='liquidation-card-summary';liquidationSummary.className='liquidation-card-summary';
+    document.querySelector('[data-action="Likwidacja"]').after(liquidationSummary);
+    const liquidationDialog=document.createElement('dialog');
+    liquidationDialog.className='liquidation-dialog';liquidationDialog.id='liquidation-dialog';
+    liquidationDialog.innerHTML='<h3>Likwidacja sprzętu</h3><p id="liquidation-count"></p><table><thead><tr><th>Typ i model</th><th>Nr seryjny</th><th>Aktualny status</th><th>Wartość księgowa</th></tr></thead><tbody id="liquidation-targets"></tbody></table><form id="liquidation-form"><label for="liquidation-kind">Nowy status</label><select id="liquidation-kind" required><option value="WYCOFANY">WYCOFANY — oczekuje na utylizację</option><option value="ZLIKWIDOWANY">ZLIKWIDOWANY — ostateczna likwidacja</option></select><label for="liquidation-date">Data operacji</label><input id="liquidation-date" type="date" required><label for="liquidation-reason">Przyczyna (obowiązkowa dla ZLIKWIDOWANY)</label><textarea id="liquidation-reason" placeholder="Podaj przyczynę likwidacji"></textarea><label class="permission-demo"><input id="liquidation-permission" type="checkbox"> Symuluj użytkownika z uprawnieniami do likwidacji sprzętu o wartości księgowej powyżej 2 000 zł</label><p class="fault-notice">To przełącznik pokazowy, a nie rzeczywiste uwierzytelnienie użytkownika.</p><p class="liquidation-error" id="liquidation-error" role="alert"></p><div class="dialog-actions"><button class="action" type="button" id="liquidation-cancel">Anuluj</button><button class="action" type="submit">Zapisz operację</button></div></form>';
+    document.body.appendChild(liquidationDialog);
+    const liquidationForm=document.getElementById('liquidation-form');
+    const liquidationKind=document.getElementById('liquidation-kind');
+    const liquidationReason=document.getElementById('liquidation-reason');
+    const liquidationError=document.getElementById('liquidation-error');
+    let liquidationIds=[];
+    function refreshLiquidationState(record){
+      const controls=[...equipmentCard.querySelectorAll('input,select,textarea,button')];
+      controls.forEach(control=>{
+        if(control.dataset.liquidationLock==='1'){
+          control.disabled=control.dataset.liquidationWasDisabled==='1';
+          delete control.dataset.liquidationLock;delete control.dataset.liquidationWasDisabled;
+        }
+      });
+      const state=record.status;
+      [...cardFields.status.options].forEach(option=>{if(option.value)option.disabled=false;});
+      [...cardFields.status.options].forEach(option=>{
+        if(!option.value)return;
+        if(state==='WYCOFANY')option.disabled=!['WYCOFANY','USZKODZONY','AKTYWNY'].includes(option.value);
+        else if(state!=='ZLIKWIDOWANY')option.disabled=['WYCOFANY','ZLIKWIDOWANY'].includes(option.value);
+      });
+      const locked=state==='WYCOFANY'||state==='ZLIKWIDOWANY';
+      equipmentCard.classList.toggle('is-liquidated',state==='ZLIKWIDOWANY');
+      if(locked)controls.forEach(control=>{
+        if(control.matches('.tab,#back-to-list,#new-equipment-card,.print-panel button'))return;
+        if(state==='WYCOFANY'&&control.matches('#save-equipment,#status-choice,[data-action="Likwidacja"]'))return;
+        control.dataset.liquidationLock='1';
+        control.dataset.liquidationWasDisabled=control.disabled?'1':'0';
+        control.disabled=true;
+      });
+      const latest=(record.liquidationHistory||[]).at(-1);
+      liquidationSummary.textContent=latest?'Ostatnia zmiana: '+latest.from+' → '+latest.to+' · '+formatDate(latest.date)+(latest.reason?' · '+latest.reason:''):state==='ZLIKWIDOWANY'?'Sprzęt zlikwidowany — karta tylko do odczytu.':state==='WYCOFANY'?'Sprzęt wycofany. Można go przywrócić do AKTYWNY lub USZKODZONY.':'';
+    }
+    equipmentCard.addEventListener('click',event=>{
+      const record=currentRecord();if(!record||!['WYCOFANY','ZLIKWIDOWANY'].includes(record.status))return;
+      const control=event.target.closest('button,input,select,textarea');if(!control)return;
+      if(control.matches('.tab,#back-to-list,#new-equipment-card,.print-panel button'))return;
+      if(record.status==='WYCOFANY'&&control.matches('#save-equipment,#status-choice,[data-action="Likwidacja"]'))return;
+      event.preventDefault();event.stopImmediatePropagation();
+      show(record.status==='ZLIKWIDOWANY'?'Na zlikwidowanym sprzęcie nie można wykonywać operacji.':'Najpierw przywróć status AKTYWNY lub USZKODZONY.');
+    },true);
+    equipmentCard.addEventListener('submit',event=>{
+      const record=currentRecord();if(!record||!['WYCOFANY','ZLIKWIDOWANY'].includes(record.status))return;
+      event.preventDefault();event.stopImmediatePropagation();
+    },true);
+    function rejectBlockedSelection(event){
+      const blocked=[...selectedEquipmentIds].map(id=>equipmentRecords.find(record=>record.id===id)).filter(record=>record&&['WYCOFANY','ZLIKWIDOWANY'].includes(record.status));
+      if(!blocked.length)return;
+      event.preventDefault();event.stopImmediatePropagation();
+      show('Najpierw usuń z zaznaczenia sprzęt wycofany lub zlikwidowany: '+blocked.map(record=>record.serial).join(', '));
+    }
+    batchServiceButton.addEventListener('click',rejectBlockedSelection,true);
+    activityBatchButton.addEventListener('click',rejectBlockedSelection,true);
+    function openLiquidation(ids){
+      liquidationIds=[...new Set(ids)].filter(id=>equipmentRecords.some(record=>record.id===id));
+      if(!liquidationIds.length){show('Najpierw zaznacz sprzęt na liście.');return;}
+      const targets=liquidationIds.map(id=>equipmentRecords.find(record=>record.id===id));
+      const final=targets.filter(record=>record.status==='ZLIKWIDOWANY');
+      if(final.length){show('Nie można wykonać operacji na zlikwidowanym sprzęcie: '+final.map(record=>record.serial).join(', '));return;}
+      liquidationForm.reset();liquidationReason.required=false;liquidationError.textContent='';document.getElementById('liquidation-date').value=demoLocalToday();
+      document.getElementById('liquidation-count').textContent='Liczba urządzeń: '+targets.length+'. Zmiana zostanie zastosowana do wszystkich pozycji.';
+      const body=document.getElementById('liquidation-targets');body.replaceChildren();
+      targets.forEach(record=>{
+        const row=body.insertRow();
+        [record.type+' · '+record.model,record.serial,record.status,record.bookValue===''?'Brak':formatNumber.format(Number(record.bookValue??0))+' zł'].forEach(value=>{const cell=row.insertCell();cell.textContent=value;});
+      });
+      liquidationDialog.showModal();
+    }
+    document.querySelector('[data-action="Likwidacja"]').addEventListener('click',()=>{const record=currentRecord();if(record)openLiquidation([record.id]);});
+    liquidationButton.addEventListener('click',()=>openLiquidation([...selectedEquipmentIds]));
+    document.getElementById('liquidation-cancel').addEventListener('click',()=>liquidationDialog.close());
+    liquidationKind.addEventListener('change',()=>{liquidationReason.required=liquidationKind.value==='ZLIKWIDOWANY';liquidationError.textContent='';});
+    liquidationForm.addEventListener('submit',event=>{
+      event.preventDefault();liquidationError.textContent='';
+      liquidationReason.required=liquidationKind.value==='ZLIKWIDOWANY';
+      if(!liquidationForm.reportValidity())return;
+      const targets=liquidationIds.map(id=>equipmentRecords.find(record=>record.id===id));
+      if(!targets.length||targets.some(record=>!record||record.status==='ZLIKWIDOWANY')){liquidationError.textContent='Co najmniej jedno urządzenie jest już zlikwidowane.';return;}
+      const kind=liquidationKind.value,date=document.getElementById('liquidation-date').value,reason=liquidationReason.value.trim();
+      const same=targets.filter(record=>record.status===kind);
+      if(same.length){liquidationError.textContent='Status jest już ustawiony dla: '+same.map(record=>record.serial).join(', ')+'. Nie zapisano żadnej pozycji.';return;}
+      if(kind==='ZLIKWIDOWANY'){
+        if(!reason){liquidationError.textContent='Podaj przyczynę likwidacji.';liquidationReason.focus();return;}
+        const missing=targets.filter(record=>record.bookValue===''||!Number.isFinite(Number(record.bookValue)));
+        if(missing.length){liquidationError.textContent='Brak wartości księgowej dla: '+missing.map(record=>record.serial).join(', ')+'.';return;}
+        const expensive=targets.filter(record=>Number(record.bookValue)>2000);
+        if(expensive.length&&!document.getElementById('liquidation-permission').checked){
+          liquidationError.textContent='Wymagane uprawnienia do likwidacji sprzętu powyżej 2 000 zł: '+expensive.map(record=>record.serial).join(', ')+'. Nie zapisano żadnej pozycji.';return;
+        }
+      }
+      if(!equipmentCard.hidden)saveCurrentCardState();
+      targets.forEach(record=>{
+        const previous=record.status,previousMarker=record.marker||'',state=serviceCardState(record);
+        record.status=kind;
+        setServiceStateField(state,cardFields.status,kind);
+        if(kind==='ZLIKWIDOWANY'){
+          record.disposalDate=date;setServiceStateField(state,cardFields.disposalDate,formatDate(date));
+          record.marker='';setServiceStateField(state,cardFields.marker,'');
+          if(previousMarker)registerNfzChange(record,previousMarker,'',date,'Likwidacja sprzętu');
+        }
+        (record.liquidationHistory||(record.liquidationHistory=[])).push({from:previous,to:kind,date,reason,user:'Admin'});
+        record.cardState=state;
+      });
+      if(!equipmentCard.hidden&&targets.includes(currentRecord())){
+        const record=currentRecord();restoreCardState(record.cardState);renderCounterHistory();renderBookValue(record);renderECare(record);refreshLiquidationState(record);
+      }
+      renderEquipmentList();liquidationDialog.close();show('Zmieniono status '+targets.length+' urządzeń na '+kind);
+    });
   </script>
 </body>
 </html>
